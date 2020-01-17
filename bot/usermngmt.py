@@ -17,11 +17,8 @@ def start(update, context):
     update.message.reply_text('Hallo! Füge Mensen zu deiner List mit dem /add Befehl hinzu, jeden Tag um etwa 10 Uhr wird dir gesagt, was es zu Essen gibt!')
 
 def add(update, context):
-    mensa_to_add = ""
-    for i in range(len(context.args)):
-        mensa_to_add = context.args[i] + " "
-    mensa_to_add = mensa_to_add[0:-1]
-    if mensa_to_add in mensas:
+    mensa_to_add = get_matching_mensa(" ".join(context.args))
+    if mensa_to_add:
         add_mensa_subscription(update.message.chat_id, mensa_to_add)
         update.message.reply_text('%s wurde der Liste hinzugefügt.' % mensa_to_add)
     else:
@@ -29,18 +26,16 @@ def add(update, context):
 
 
 def remove(update, context):
-    mensa_to_remove = ""
-    for i in range(len(context.args)):
-        mensa_to_remove = context.args[i] + " "
-    mensa_to_remove = mensa_to_remove[0:-1]
-    if mensa_to_remove in mensas:
+    mensa_to_remove = get_matching_mensa(" ".join(context.args))
+    if mensa_to_remove:
         remove_mensa_subscription(update.message.chat_id, mensa_to_remove)
         update.message.reply_text('%s wurde aus der Liste entfernt.' % mensa_to_remove)
     else:
         update.message.reply_text('Konnte nicht entfernt werden. Versuche es erneut. Oder nutze \removeAll')
 
-def removeAll(update, context):
-    print("todo")
+def remove_all(update, context):
+    remove_mensa_subscriptions(update.message.chat_id)
+    update.message.reply_text('Alle abonnierten Mensen wurden entfernt-')
 
 def show_list(update, context):
     mensas_sub = get_mensas_subscription(update.message.chat_id)
@@ -53,7 +48,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater("875973107:AAFQA10XDbcVrnMNA0DBwSphwjtYRtaROhE", use_context=True)
+    updater = Updater("...", use_context=True)
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
     # on different commands - answer in Telegram
@@ -61,7 +56,7 @@ def main():
     dp.add_handler(CommandHandler("add", add))
     dp.add_handler(CommandHandler("list", show_list))
     dp.add_handler(CommandHandler("remove", remove))
-    dp.add_handler(CommandHandler("removeAll", removeAll))
+    dp.add_handler(CommandHandler("removeall", remove_all))
     # Start the Bot
     updater.start_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
