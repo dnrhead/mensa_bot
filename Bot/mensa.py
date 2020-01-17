@@ -79,6 +79,7 @@ def get_mensas_subscription(user):
 def get_all_mensa_subscriptions():
     return [i[0] for i in execute_sql("SELECT DISTINCT mensa FROM users")]
 
+
 def get_all_user_and_mensas():
     return execute_sql("SELECT DISTINCT * FROM users")
 
