@@ -56,7 +56,7 @@ def main():
     dp.add_handler(CommandHandler("add", add))
     dp.add_handler(CommandHandler("list", show_list))
     dp.add_handler(CommandHandler("remove", remove))
-    dp.add_handler(CommandHandler("removeAll", remove_all))
+    dp.add_handler(CommandHandler("removeall", remove_all))
     # Start the Bot
     updater.start_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
