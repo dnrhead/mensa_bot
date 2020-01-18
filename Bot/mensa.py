@@ -21,12 +21,11 @@ def retrieve_menus(mensa):
         split = i.split("</h3>")
         if len(split) != 2:
             continue
-        day2, rest = split
+        day, rest = split
         menus = re.findall(r'<h4.*?>(.*?)</h4><div.*?>\s*(.*?)<', rest)
         if menus:
-            day = day2.split(" ")[1]
-            result[day] = [t + ": " + f.strip(", ")
-                           for t, f in menus if f.strip(", ")]
+            result[day.split(" ")[1]] = [t + ": " + f.strip(", ")
+                                         for t, f in menus if f.strip(", ")]
     return result
 
 
@@ -69,6 +68,10 @@ def add_mensa_subscription(user, mensa):
 def remove_mensa_subscription(user, mensa):
     execute_sql("DELETE FROM users WHERE user=%r AND mensa=%r" %
                 (user, mensa))
+
+
+def remove_mensa_subscriptions(user):
+    execute_sql("DELETE FROM users WHERE user=%r" % user)
 
 
 def get_mensas_subscription(user):
