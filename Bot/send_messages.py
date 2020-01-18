@@ -41,10 +41,13 @@ def main():
     data_to_send = get_all_user_and_mensas()
     # todo iterate over all, check "Avoiding flood limits"
     for pairs in data_to_send:
-        text = pairs[1] + " "
+        text = "<u><b>" + pairs[1] + ":</u>\n"
         for es in mensa_essen[pairs[1]]:
-            text = text + " " + es
-        bot.send_message(chat_id=pairs[0], text=text)
+            text = text + "<b>" + es + "\n"
+        text = text.replace(":", ":</b>")
+        if mensa_essen[pairs[1]] is not None and len(mensa_essen[pairs[1]]) > 0: 
+            bot.send_message(chat_id=pairs[0], text=text[0:-1], parse_mode='HTML')
+            # print(text)
     
 if __name__ == '__main__':
     main()
