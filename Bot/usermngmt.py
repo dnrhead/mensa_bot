@@ -17,8 +17,8 @@ def start(update, context):
     update.message.reply_text('Hallo! Füge Mensen zu deiner List mit dem /add Befehl hinzu, jeden Tag um etwa 10 Uhr wird dir gesagt, was es zu Essen gibt!')
 
 def add(update, context):
-    mensa_to_add = " ".join(context.args)
-    if mensa_to_add in mensas:
+    mensa_to_add = get_matching_mensa(" ".join(context.args))
+    if mensa_to_add:
         add_mensa_subscription(update.message.chat_id, mensa_to_add)
         update.message.reply_text('%s wurde der Liste hinzugefügt.' % mensa_to_add)
     else:
@@ -26,8 +26,8 @@ def add(update, context):
 
 
 def remove(update, context):
-    mensa_to_remove = " ".join(context.args)
-    if mensa_to_remove in mensas:
+    mensa_to_remove = get_matching_mensa(" ".join(context.args))
+    if mensa_to_remove:
         remove_mensa_subscription(update.message.chat_id, mensa_to_remove)
         update.message.reply_text('%s wurde aus der Liste entfernt.' % mensa_to_remove)
     else:
