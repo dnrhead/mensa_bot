@@ -50,6 +50,21 @@ def show_list(update, context):
     for mensa in mensas_sub:
         update.message.reply_text(mensa)
 
+def essen(update, context):
+    mensa_menus = get_today_menus()
+    subs = get_mensas_subscription(update.message.chat_id)
+    for mensa in subs:
+        menus = mensa_menus[mensa]
+        if not menus:
+            continue
+        text = "<u><b>%s:</b></u>\n" % mensa +\
+               "\n".join("<b>" + m.replace(":", ":</b>") for m in menus)
+        update.message.reply_text(text, parse_mode='HTML')
+
+def show_help(update, context):
+    with open("help.html") as f:
+        content = f.readlines()
+    update.message.reply_text(content, parse_mode='HTML')
 
 def main():
     """Run bot."""
@@ -65,6 +80,8 @@ def main():
     dp.add_handler(CommandHandler("list", show_list))
     dp.add_handler(CommandHandler("remove", remove))
     dp.add_handler(CommandHandler("removeall", remove_all))
+    dp.add_handler(CommandHandler("help", show_help))
+    dp.add_handler(CommandHandler("essen", essen))
     # Start the Bot
     updater.start_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or

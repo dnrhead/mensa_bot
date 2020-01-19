@@ -35,10 +35,8 @@ def main():
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
                         '%(message)s')
 
-    # todo add check wether mensa is opened today
     mensa_menus = get_today_menus()
     users_mensas = get_all_user_and_mensas()
-    # todo iterate over all, check "Avoiding flood limits"
     for cid, mensa in users_mensas:
         menus = mensa_menus[mensa]
         if not menus:
@@ -46,6 +44,7 @@ def main():
         text = "<u><b>%s:</b></u>\n" % mensa +\
                "\n".join("<b>" + m.replace(":", ":</b>") for m in menus)
         bot.send_message(chat_id=cid, text=text, parse_mode='HTML')
+        sleep(0.05)  # avoiding flood limits
 
 
 if __name__ == '__main__':
