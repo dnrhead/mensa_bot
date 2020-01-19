@@ -1,47 +1,55 @@
 #!/usr/bin/env python
 
-from urllib.request import urlopen
-import re
 import logging
 from mensa import *
-
 from telegram.ext import Updater, CommandHandler
 
 # Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
+                    '%(message)s', level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
+
 def start(update, context):
-    update.message.reply_text('Hallo! Füge Mensen zu deiner List mit dem /add Befehl hinzu, jeden Tag um etwa 10 Uhr wird dir gesagt, was es zu Essen gibt!')
+    update.message.reply_text('Hallo! Füge Mensen zu deiner List mit dem '
+                              '/add Befehl hinzu, jeden Tag um etwa 10 Uhr '
+                              'wird dir gesagt, was es zu Essen gibt!')
+
 
 def add(update, context):
     mensa_to_add = get_matching_mensa(" ".join(context.args))
     if mensa_to_add:
         add_mensa_subscription(update.message.chat_id, mensa_to_add)
-        update.message.reply_text('%s wurde der Liste hinzugefügt.' % mensa_to_add)
+        update.message.reply_text('%s wurde der Liste hinzugefügt.' %
+                                  mensa_to_add)
     else:
-        update.message.reply_text('Konnte nicht hinzugefügt werden. Versuche es erneut.')
+        update.message.reply_text('Konnte nicht hinzugefügt werden. Versuche '
+                                  'es erneut.')
 
 
 def remove(update, context):
     mensa_to_remove = get_matching_mensa(" ".join(context.args))
     if mensa_to_remove:
         remove_mensa_subscription(update.message.chat_id, mensa_to_remove)
-        update.message.reply_text('%s wurde aus der Liste entfernt.' % mensa_to_remove)
+        update.message.reply_text('%s wurde aus der Liste entfernt.' %
+                                  mensa_to_remove)
     else:
-        update.message.reply_text('Konnte nicht entfernt werden. Versuche es erneut. Oder nutze \removeAll')
+        update.message.reply_text('Konnte nicht entfernt werden. Versuche es '
+                                  'erneut. Oder nutze \removeAll')
+
 
 def remove_all(update, context):
     remove_mensa_subscriptions(update.message.chat_id)
     update.message.reply_text('Alle abonnierten Mensen wurden entfernt-')
+
 
 def show_list(update, context):
     mensas_sub = get_mensas_subscription(update.message.chat_id)
     update.message.reply_text('Du hast folgende Mensen abboniert:')
     for mensa in mensas_sub:
         update.message.reply_text(mensa)
+
 
 def main():
     """Run bot."""
@@ -66,6 +74,7 @@ def main():
     print("should be started now")
     updater.idle()
     print("started bot")
+
 
 if __name__ == '__main__':
     print("try to start bot")
