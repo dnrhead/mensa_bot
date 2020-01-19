@@ -18,15 +18,20 @@ def retrieve_menus(mensa):
         txt = url.read().decode()
     result = {}
     for i in txt.replace("<br>", ", ").split("<h3>"):
-        split = i.split("</h3>")
-        if len(split) != 2:
+        m = re.search(r'(\d+\.\d+\.).*?</h3>(.*)', i, re.DOTALL)
+        if not m:
             continue
-        day, rest = split
-        menus = re.findall(r'<h4.*?>(.*?)</h4><div.*?>\s*(.*?)<', rest)
-        if menus:
-            result[day.split(" ")[1]] = [t + ": " + f.strip(", ")
-                                         for t, f in menus if f.strip(", ")]
+        menus = re.findall(r'<h4.*?>(.*?)</h4><div.*?>\s*(.*?)<', m.group(2))
+        result[m.group(1)] = [t + ": " + f.strip(", ")
+                              for t, f in menus if f.strip(", ")]
+    # Sundays do not occur on the site, therefore add [] manually
+    result[get_next_sunday()] = []
     return result
+
+
+def get_next_sunday():
+    today = datetime.today()
+    return "%02d.%02d." % (today.day + 6 - today.weekday(), today.month)
 
 
 def get_today_menus():
@@ -40,7 +45,7 @@ def get_today_menus():
             add_menus(m, data)
             if date in data:
                 menus = data[date]
-        result[m] = menus
+        result[m] = list(filter(bool, menus))
     return result
 
 
@@ -94,7 +99,12 @@ def get_menus(mensa, date):
 
 
 def add_menus(mensa, data):
-    values = ("(%r, %r, %r)" % (mensa, d, f) for d in data for f in data[d])
+    values = []
+    for d in data:
+        if data[d]:
+            values.extend("(%r, %r, %r)" % (mensa, d, f) for f in data[d])
+        else:
+            values.append("(%r, %r, NULL)" % (mensa, d))
     execute_sql("INSERT INTO menus VALUES %s;" % ", ".join(values))
 
 
