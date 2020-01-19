@@ -16,7 +16,7 @@ def start(update, context):
                               '/add Befehl hinzu.\nJeden Tag um etwa 10 Uhr '
                               'wird dir geschick, was es zu Essen gibt!'
                               '\nFalls du Hilfe bei der Bedienung des Bots '
-                              'brauchst, schicke den /help Befehl.\n'
+                              'brauchst, schicke den /help Befehl.\n')
     print("start command sent")
 
 
