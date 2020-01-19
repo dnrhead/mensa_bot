@@ -1,21 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# This program is dedicated to the public domain under the CC0 license.
-
-"""
-First, a few callback functions are defined. Then, those functions are passed
-to the Dispatcher and registered at their respective places.
-Then, the bot is started and runs until we press Ctrl-C on the command line.
-Usage:
-Example of a bot-user conversation using ConversationHandler.
-Send /start to initiate the conversation.
-Press Ctrl-C on the command line or send a signal to the process to stop the
-bot.
-"""
-
 import logging
 import telegram
 from mensa import get_today_menus, get_all_user_and_mensas
+from time import sleep
 
 
 # todo: schedule this every day
@@ -37,6 +25,7 @@ def main():
 
     mensa_menus = get_today_menus()
     users_mensas = get_all_user_and_mensas()
+    print("Sending %d messages" % (len(users_mensas)))
     for cid, mensa in users_mensas:
         menus = mensa_menus[mensa]
         if not menus:

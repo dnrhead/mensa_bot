@@ -12,9 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 def start(update, context):
-    update.message.reply_text('Hallo! Füge Mensen zu deiner List mit dem '
-                              '/add Befehl hinzu, jeden Tag um etwa 10 Uhr '
-                              'wird dir gesagt, was es zu Essen gibt!')
+    update.message.reply_text('Hallo! Füge Mensen zu deiner Liste mit dem '
+                              '/add Befehl hinzu.\nJeden Tag um etwa 10 Uhr '
+                              'wird dir geschick, was es zu Essen gibt!'
+                              '\nFalls du Hilfe bei der Bedienung des Bots '
+                              'brauchst, schicke den /help Befehl.\n'
+    print("start command sent")
 
 
 def add(update, context):
@@ -23,6 +26,7 @@ def add(update, context):
         add_mensa_subscription(update.message.chat_id, mensa_to_add)
         update.message.reply_text('%s wurde der Liste hinzugefügt.' %
                                   mensa_to_add)
+        print("Mensa added.")
     else:
         update.message.reply_text('Konnte nicht hinzugefügt werden. Versuche '
                                   'es erneut.')
@@ -41,7 +45,7 @@ def remove(update, context):
 
 def remove_all(update, context):
     remove_mensa_subscriptions(update.message.chat_id)
-    update.message.reply_text('Alle abonnierten Mensen wurden entfernt-')
+    update.message.reply_text('Alle abonnierten Mensen wurden entfernt.')
 
 
 def show_list(update, context):
@@ -56,6 +60,7 @@ def essen(update, context):
     for mensa in subs:
         menus = mensa_menus[mensa]
         if not menus:
+            update.message.reply_text("Heute kein Essen in der %s" % mensa, parse_mode='HTML')
             continue
         text = "<u><b>%s:</b></u>\n" % mensa +\
                "\n".join("<b>" + m.replace(":", ":</b>") for m in menus)
@@ -64,7 +69,7 @@ def essen(update, context):
 def show_help(update, context):
     with open("help.html") as f:
         content = f.readlines()
-    update.message.reply_text(content, parse_mode='HTML')
+    update.message.reply_text(''.join(content), parse_mode='HTML')
 
 def main():
     """Run bot."""
