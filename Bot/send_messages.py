@@ -3,8 +3,8 @@
 # This program is dedicated to the public domain under the CC0 license.
 
 """
-First, a few callback functions are defined. Then, those functions are passed to
-the Dispatcher and registered at their respective places.
+First, a few callback functions are defined. Then, those functions are passed
+to the Dispatcher and registered at their respective places.
 Then, the bot is started and runs until we press Ctrl-C on the command line.
 Usage:
 Example of a bot-user conversation using ConversationHandler.
@@ -15,8 +15,7 @@ bot.
 
 import logging
 import telegram
-from telegram.error import NetworkError, Unauthorized
-from mensa import *
+from mensa import get_today_menus, get_all_user_and_mensas
 
 
 # todo: schedule this every day
@@ -25,7 +24,6 @@ def main():
     global update_id
     # Telegram Bot Authorization Token
     bot = telegram.Bot("...")
-    
 
     # get the first pending update_id, this is so we can skip over it in case
     # we get an "Unauthorized" exception.
@@ -34,21 +32,21 @@ def main():
     except IndexError:
         update_id = None
 
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
+                        '%(message)s')
+
     # todo add check wether mensa is opened today
-    mensa_essen = get_today_menus()
-    data_to_send = get_all_user_and_mensas()
+    mensa_menus = get_today_menus()
+    users_mensas = get_all_user_and_mensas()
     # todo iterate over all, check "Avoiding flood limits"
-    for pairs in data_to_send:
-        text = "<u><b>" + pairs[1] + ":</u>\n"
-        for es in mensa_essen[pairs[1]]:
-            text = text + "<b>" + es + "\n"
-        text = text.replace(":", ":</b>")
-        if mensa_essen[pairs[1]] is not None and len(mensa_essen[pairs[1]]) > 0: 
-            bot.send_message(chat_id=pairs[0], text=text[0:-1], parse_mode='HTML')
-            # print(text)
-    
+    for cid, mensa in users_mensas:
+        menus = mensa_menus[mensa]
+        if not menus:
+            continue
+        text = "<u><b>%s:</b></u>\n" % mensa +\
+               "\n".join("<b>" + m.replace(":", ":</b>") for m in menus)
+        bot.send_message(chat_id=cid, text=text, parse_mode='HTML')
+
+
 if __name__ == '__main__':
     main()
-    

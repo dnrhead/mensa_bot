@@ -99,8 +99,6 @@ def add_menus(mensa, data):
 
 
 def edit_distance(s1, s2):
-    if s1 == s2:
-        return 0
     if len(s1) < len(s2):
         return edit_distance(s2, s1)
     if len(s2) == 0:
@@ -121,7 +119,7 @@ def get_matching_mensa(mensa):
     min_ed = 3
     res = None
     for m in mensas:
-        for m2 in (m.lower(), m.replace("Mensa ", "").lower()):
+        for m2 in (m.lower(), m.lower().replace("mensa", "").strip()):
             ed = edit_distance(m2, mensa.lower())
             if ed == 0:
                 return m
