@@ -31,7 +31,7 @@ def main():
         if not menus:
             continue
         text = "<u><b>%s:</b></u>\n" % mensa +\
-               "\n".join("<b>" + m.replace(":", ":</b>") for m in menus)
+               "\n".join("<b>%s%s</b>%s" % m.partition(":") for m in menus)
         bot.send_message(chat_id=cid, text=text, parse_mode='HTML')
         sleep(0.05)  # avoiding flood limits
 
