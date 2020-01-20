@@ -63,7 +63,7 @@ def essen(update, context):
             update.message.reply_text("Heute kein Essen in der %s" % mensa, parse_mode='HTML')
             continue
         text = "<u><b>%s:</b></u>\n" % mensa +\
-               "\n".join("<b>" + m.replace(":", ":</b>") for m in menus)
+               "\n".join("<b>%s%s</b>%s" % m.partition(":") for m in menus)
         update.message.reply_text(text, parse_mode='HTML')
 
 def show_help(update, context):

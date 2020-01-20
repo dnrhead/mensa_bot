@@ -9,7 +9,7 @@ mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
           'Mensa Schwenningen', 'Mensa Trossingen',
           'Ausgabestelle EH Freiburg', 'MusiKantine', 'OHG Furtwangen']
 
-DB_NAME = "database.db"
+DB_NAME = "database.db" # while sheduled with cron, use absoult path
 
 
 def retrieve_menus(mensa):
