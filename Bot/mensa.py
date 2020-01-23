@@ -3,16 +3,25 @@ import re
 import sqlite3
 from datetime import datetime
 
-mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
-          'Mensa Littenweiler', 'Mensa Flugplatz', 'Mensa Furtwangen',
-          'Mensa Offenburg', 'Mensa Gengenbach', 'Mensa Kehl',
-          'Mensa Schwenningen', 'Mensa Trossingen',
-          'Ausgabestelle EH Freiburg', 'MusiKantine', 'OHG Furtwangen']
+swfr_mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
+               'Mensa Littenweiler', 'Mensa Flugplatz', 'Mensa Furtwangen',
+               'Mensa Offenburg', 'Mensa Gengenbach', 'Mensa Kehl',
+               'Mensa Schwenningen', 'Mensa Trossingen', 'Mensa Loerrach',
+               'Ausgabestelle EH Freiburg', 'MusiKantine', 'OHG Furtwangen']
+mensas = swfr_mensas + ["Solarcasino"]
 
 DB_NAME = "database.db" # while sheduled with cron, use absoult path
 
 
 def retrieve_menus(mensa):
+    if mensa in swfr_mensas:
+        return retrieve_menus_swfr(mensa)
+    if mensa == "Solarcasino":
+        return retrieve_menus_solarcasino()
+    raise NotImplementedError("Unhandled case: %r" % mensa)
+
+
+def retrieve_menus_swfr(mensa):
     with urlopen("https://www.swfr.de/essen-trinken/speiseplaene/"
                  + mensa.lower().replace(" ", "-")) as url:
         txt = url.read().decode()
@@ -25,13 +34,33 @@ def retrieve_menus(mensa):
         result[m.group(1)] = [t + ": " + f.strip(", ")
                               for t, f in menus if f.strip(", ")]
     # Sundays do not occur on the site, therefore add [] manually
-    result[get_next_sunday()] = []
+    result[get_next_weekday(6)] = []
     return result
 
 
-def get_next_sunday():
+def retrieve_menus_solarcasino():
+    with urlopen("https://kantine.ise.fhg.de/sic/") as url:
+        txt = url.read().decode()
+    result = {}
+    menus = re.findall(r'<td class="(\d\d.\d\d.)\d+-.*?(\d)".*?>\s*'
+                       r'(.*?)\s*</td>', txt)
+    for date, n, f in menus:
+        if date not in result:
+            result[date] = []
+        food_tmp = re.sub(r'\s*<sup>(.*?)</sup>\s*', " ", f)
+        food = re.sub(r'\s*&#.*', "", food_tmp)
+        if food == "-":
+            continue
+        result[date].append("Essen %s: %s" % (n, food))
+    # Saturndays and sundays do not occur on the site, so add [] manually
+    result[get_next_weekday(5)] = []
+    result[get_next_weekday(6)] = []
+    return result
+
+
+def get_next_weekday(day):
     today = datetime.today()
-    return "%02d.%02d." % (today.day + 6 - today.weekday(), today.month)
+    return "%02d.%02d." % (today.day + day - today.weekday(), today.month)
 
 
 def get_today_menus():
