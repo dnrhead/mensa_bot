@@ -10,7 +10,7 @@ swfr_mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
                'Ausgabestelle EH Freiburg', 'MusiKantine', 'OHG Furtwangen']
 mensas = swfr_mensas + ["Solarcasino"]
 
-DB_NAME = "database.db" # while sheduled with cron, use absoult path
+DB_NAME = "/home/ubuntu/database.db" # while sheduled with cron, use absoult path
 
 
 def retrieve_menus(mensa):
