@@ -45,12 +45,12 @@ def retrieve_menus_solarcasino():
     menus = re.findall(r'<td class="(\d\d.\d\d.)\d+-.*?(\d)".*?>\s*'
                        r'(.*?)\s*</td>', txt)
     for date, n, f in menus:
-        if date not in result:
-            result[date] = []
         food_tmp = re.sub(r'\s*<sup>(.*?)</sup>\s*', " ", f)
         food = re.sub(r'\s*&#.*', "", food_tmp)
         if food == "-":
             continue
+        if date not in result:
+            result[date] = []
         result[date].append("Essen %s: %s" % (n, food))
     # Saturndays and sundays do not occur on the site, so add [] manually
     result[get_next_weekday(5)] = []
