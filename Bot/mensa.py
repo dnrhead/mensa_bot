@@ -2,6 +2,7 @@ from urllib.request import urlopen
 import re
 import sqlite3
 from datetime import datetime
+import os
 
 swfr_mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
                'Mensa Littenweiler', 'Mensa Flugplatz', 'Mensa Furtwangen',
@@ -10,7 +11,7 @@ swfr_mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
                'Ausgabestelle EH Freiburg', 'MusiKantine', 'OHG Furtwangen']
 mensas = swfr_mensas + ["Solarcasino"]
 
-DB_NAME = "/home/ubuntu/database.db" # while sheduled with cron, use absoult path
+DB_NAME = "database.db"
 
 
 def retrieve_menus(mensa):
@@ -79,7 +80,9 @@ def get_today_menus():
 
 
 def execute_sql(cmd):
-    connection = sqlite3.connect(DB_NAME)
+    dirname = os.path.dirname(os.path.abspath(__file__))
+    dbpath = os.path.join(dirname, DB_NAME)
+    connection = sqlite3.connect(dbpath)
     cursor = connection.cursor()
     cursor.execute(cmd)
     result = cursor.fetchall()
