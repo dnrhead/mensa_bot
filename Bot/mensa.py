@@ -1,7 +1,7 @@
 from urllib.request import urlopen
 import re
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 swfr_mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
@@ -31,12 +31,14 @@ def retrieve_menus_swfr(mensa):
         m = re.search(r'(\d+\.\d+\.).*?</h3>(.*)', i, re.DOTALL)
         if not m:
             continue
-        menus = re.findall(r'<h4.*?>(.*?)</h4><div.*?>\s*(.*?)<', m.group(2))
-        result[m.group(1)] = [t + ": " + f.strip(", ")
-                              for t, f in menus if f.strip(", ")]
+        menus = re.findall(r'<div class="row (.*?) mb-2"><h4.*?>(.*?)</h4>'
+                           '<div.*?>\s*(.*?)<', m.group(2))
+        print(menus)
+        result[m.group(1)] = [(t + ": " + f.strip(", "), "veg" in v)
+                              for v, t, f in menus if f.strip(", ")]
     # Sundays do not occur on the site, therefore add [] manually
     result[get_next_weekday(6)] = []
-    return result
+    return result   
 
 
 def retrieve_menus_solarcasino():
@@ -47,26 +49,31 @@ def retrieve_menus_solarcasino():
                        r'(.*?)\s*</td>', txt)
     for date, n, f in menus:
         food_tmp = re.sub(r'\s*<sup>(.*?)</sup>\s*', " ", f)
+        veg = "&#x1F331" in food_tmp
         food = re.sub(r'\s*&#.*', "", food_tmp)
         if food == "-":
             continue
         if date not in result:
             result[date] = []
-        result[date].append("Essen %s: %s" % (n, food))
+        result[date].append(("Essen %s: %s" % (n, food), veg))
     # Saturdays and sundays do not occur on the site, so add [] manually
     result[get_next_weekday(5)] = []
     result[get_next_weekday(6)] = []
     return result
 
 
+def format_date(date):
+    return "%02d.%02d." % (date.day, date.month)
+
+
 def get_next_weekday(day):
     today = datetime.today()
-    return "%02d.%02d." % (today.day + day - today.weekday(), today.month)
+    diff = (day - today.weekday()) % 7
+    return format_date(today + timedelta(days=diff))
 
 
 def get_today_menus():
-    today = datetime.today()
-    date = "%02d.%02d." % (today.day, today.month)
+    date = format_date(datetime.today())
     result = {}
     for m in get_all_mensa_subscriptions():
         menus = get_menus(m, date)
@@ -134,7 +141,8 @@ def add_menus(mensa, data):
     values = []
     for d in data:
         if data[d]:
-            values.extend("(%r, %r, %r)" % (mensa, d, f) for f in data[d])
+            # TODO: insert vegetarian flag as well and use it afterwards
+            values.extend("(%r, %r, %r)" % (mensa, d, f) for f, v in data[d])
         else:
             values.append("(%r, %r, NULL)" % (mensa, d))
     execute_sql("INSERT INTO menus VALUES %s;" % ", ".join(values))
