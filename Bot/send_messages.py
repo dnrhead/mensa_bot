@@ -4,6 +4,7 @@ import logging
 import telegram
 from mensa import get_today_menus, get_all_user_and_mensas
 from time import sleep
+from token import token
 
 
 # todo: schedule this every day
@@ -11,7 +12,7 @@ def main():
     """Run the bot."""
     global update_id
     # Telegram Bot Authorization Token
-    bot = telegram.Bot("...")
+    bot = telegram.Bot(token)
 
     # get the first pending update_id, this is so we can skip over it in case
     # we get an "Unauthorized" exception.
