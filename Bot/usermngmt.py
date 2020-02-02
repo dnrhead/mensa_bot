@@ -3,7 +3,7 @@
 import logging
 from mensa import *
 from telegram.ext import Updater, CommandHandler
-from token import token
+from token2 import token2
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
@@ -77,7 +77,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater(token, use_context=True)
+    updater = Updater(token2, use_context=True)
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
     # on different commands - answer in Telegram
