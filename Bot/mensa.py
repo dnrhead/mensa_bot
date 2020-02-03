@@ -22,6 +22,29 @@ def retrieve_menus(mensa):
     raise NotImplementedError("Unhandled case: %r" % mensa)
 
 
+def format_swfr_menu(menu):
+    v, t, f, i = menu
+    res = t + ": " + f.strip(", ").replace(":,", ":")
+    if "veg" in v:
+        res += " &#x1F331"
+    if any(x in f.lower() for x in ("hähn", "huhn", "hühn", "pute", "flügel")):
+        res += " &#x1F414"
+    fish = lambda f: any(x in f.lower() for x in
+                         ("fisch", "pangasius", "lachs", "forelle", "meeres"))
+    if "Zusatzstoffe:" not in i:
+        if fish(f):
+            res += " &#x1F41F"
+        return res
+    i2 = i[i.index(":"):]
+    if "sch" in i2:
+        res += " &#x1F416"
+    if "ri" in i2:
+        res += " &#x1F404"
+    if "nF" in i2 or fish(f):
+        res += " &#x1F41F"
+    return res
+
+
 def retrieve_menus_swfr(mensa):
     with urlopen("https://www.swfr.de/essen-trinken/speiseplaene/"
                  + mensa.lower().replace(" ", "-")) as url:
@@ -32,13 +55,11 @@ def retrieve_menus_swfr(mensa):
         if not m:
             continue
         menus = re.findall(r'<div class="row (.*?) mb-2"><h4.*?>(.*?)</h4>'
-                           '<div.*?>\s*(.*?)<', m.group(2))
-        print(menus)
-        result[m.group(1)] = [(t + ": " + f.strip(", "), "veg" in v)
-                              for v, t, f in menus if f.strip(", ")]
+                           r'<div.*?>\s*(.*?)<.*?>(.*?)<', m.group(2))
+        result[m.group(1)] = list(map(format_swfr_menu, menus))
     # Sundays do not occur on the site, therefore add [] manually
     result[get_next_weekday(6)] = []
-    return result   
+    return result
 
 
 def retrieve_menus_solarcasino():
@@ -48,14 +69,13 @@ def retrieve_menus_solarcasino():
     menus = re.findall(r'<td class="(\d\d.\d\d.)\d+-.*?(\d)".*?>\s*'
                        r'(.*?)\s*</td>', txt)
     for date, n, f in menus:
-        food_tmp = re.sub(r'\s*<sup>(.*?)</sup>\s*', " ", f)
-        veg = "&#x1F331" in food_tmp
-        food = re.sub(r'\s*&#.*', "", food_tmp)
+        food_tmp = re.sub(r'<sup>(.*?)(?:</sup>|\))', "", f)
+        food = re.sub(r'\s+', " ", food_tmp)
         if food == "-":
             continue
         if date not in result:
             result[date] = []
-        result[date].append(("Essen %s: %s" % (n, food), veg))
+        result[date].append("Essen %s: %s" % (n, food))
     # Saturdays and sundays do not occur on the site, so add [] manually
     result[get_next_weekday(5)] = []
     result[get_next_weekday(6)] = []
@@ -141,8 +161,7 @@ def add_menus(mensa, data):
     values = []
     for d in data:
         if data[d]:
-            # TODO: insert vegetarian flag as well and use it afterwards
-            values.extend("(%r, %r, %r)" % (mensa, d, f) for f, v in data[d])
+            values.extend("(%r, %r, %r)" % (mensa, d, f) for f in data[d])
         else:
             values.append("(%r, %r, NULL)" % (mensa, d))
     execute_sql("INSERT INTO menus VALUES %s;" % ", ".join(values))
