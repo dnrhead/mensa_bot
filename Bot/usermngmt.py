@@ -4,6 +4,7 @@ import logging
 from mensa import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2
+from send_messages import get_mensa_text
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
@@ -63,8 +64,7 @@ def essen(update, context):
         if not menus:
             update.message.reply_text("Heute kein Essen in der %s" % mensa, parse_mode='HTML')
             continue
-        text = "<u><b>%s:</b></u>\n" % mensa +\
-               "\n".join("<b>%s%s</b>%s" % m.partition(":") for m in menus)
+        text = get_mensa_text(mensa, menus)
         update.message.reply_text(text, parse_mode='HTML')
 
 def show_help(update, context):

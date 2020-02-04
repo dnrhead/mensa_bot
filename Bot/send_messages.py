@@ -31,11 +31,12 @@ def main():
         menus = mensa_menus[mensa]
         if not menus:
             continue
-        text = "<u><b>%s:</b></u>\n" % mensa +\
-               "\n".join("<b>%s%s</b>%s" % m.partition(":") for m in menus)
+        text = get_mensa_text(mensa, menus)
         bot.send_message(chat_id=cid, text=text, parse_mode='HTML')
         sleep(0.05)  # avoiding flood limits
 
-
+def get_mensa_text(mensa, menus):
+    return  "<u><b>%s:</b></u>\n" % mensa +\
+               "\n".join("\r\n<b>%s%s</b>%s" % m.partition(":") for m in menus)
 if __name__ == '__main__':
     main()
