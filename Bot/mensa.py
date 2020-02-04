@@ -29,6 +29,8 @@ def format_swfr_menu(menu):
         res += " &#x1F331"
     if any(x in f.lower() for x in ("hähn", "huhn", "hühn", "pute", "flügel")):
         res += " &#x1F414"
+    if "lamm" in f.lower():
+        res += " &#x1F411"
     is_fish = any(x in f.lower() for x in ("fisch", "pangasius", "lachs",
                                            "forelle", "meeres"))
     if "Zusatzstoffe:" not in i:
