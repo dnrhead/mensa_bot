@@ -29,10 +29,10 @@ def format_swfr_menu(menu):
         res += " &#x1F331"
     if any(x in f.lower() for x in ("hähn", "huhn", "hühn", "pute", "flügel")):
         res += " &#x1F414"
-    fish = lambda f: any(x in f.lower() for x in
-                         ("fisch", "pangasius", "lachs", "forelle", "meeres"))
+    is_fish = any(x in f.lower() for x in ("fisch", "pangasius", "lachs",
+                                           "forelle", "meeres"))
     if "Zusatzstoffe:" not in i:
-        if fish(f):
+        if is_fish:
             res += " &#x1F41F"
         return res
     i2 = i[i.index(":"):]
@@ -40,12 +40,13 @@ def format_swfr_menu(menu):
         res += " &#x1F416"
     if "ri" in i2:
         res += " &#x1F404"
-    if "nF" in i2 or fish(f):
+    if "nF" in i2 or is_fish:
         res += " &#x1F41F"
     return res
 
 
 def retrieve_menus_swfr(mensa):
+    assert mensa in swfr_mensas
     with urlopen("https://www.swfr.de/essen-trinken/speiseplaene/"
                  + mensa.lower().replace(" ", "-")) as url:
         txt = url.read().decode()
