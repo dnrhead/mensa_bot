@@ -35,8 +35,17 @@ def main():
         bot.send_message(chat_id=cid, text=text, parse_mode='HTML')
         sleep(0.05)  # avoiding flood limits
 
-def get_mensa_text(mensa, menus):
-    return  "<u><b>%s:</b></u>\n" % mensa +\
+def get_mensa_text(mensa, menus_cpy):
+    menus = menus_cpy.copy()
+    for i in range(len(menus)):
+        num = menus[i].find("&#x1F")
+        if num != -1:
+            symbols = menus[i][num:]
+            menus[i] = menus[i][0:num-1]
+            menus[i] = menus[i].replace(": ", " " + symbols + ":" + "\r\n", 1)
+
+    return "<u><b>%s:</b></u>\n" % mensa +\
                "\n".join("\r\n<b>%s%s</b>%s" % m.partition(":") for m in menus)
+
 if __name__ == '__main__':
     main()
