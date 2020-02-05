@@ -24,15 +24,16 @@ def retrieve_menus(mensa):
 
 def format_swfr_menu(menu):
     v, t, f, i = menu
+    def matches(*args):
+        return any(x in f.lower() for x in args)
     res = t + ": " + f.strip(", ").replace(":,", ":")
-    if "veg" in v:
+    if "veg" in v or matches(" veg"):
         res += " &#x1F331"
-    if any(x in f.lower() for x in ("hähn", "huhn", "hühn", "pute", "flügel")):
+    if matches("hähn", "huhn", "hühn", "pute", "flügel"):
         res += " &#x1F414"
-    if "lamm" in f.lower():
+    if matches("lamm"):
         res += " &#x1F411"
-    is_fish = any(x in f.lower() for x in ("fisch", "pangasius", "lachs",
-                                           "forelle", "meeres"))
+    is_fish = matches("fisch", "pangasius", "lachs", "forelle", "meeres")
     if "Zusatzstoffe:" not in i:
         if is_fish:
             res += " &#x1F41F"
