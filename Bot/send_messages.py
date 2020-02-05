@@ -32,7 +32,10 @@ def main():
         if not menus:
             continue
         text = get_mensa_text(mensa, menus)
-        bot.send_message(chat_id=cid, text=text, parse_mode='HTML')
+        try:
+            bot.send_message(chat_id=cid, text=text, parse_mode='HTML')
+        except:
+            print("could not send message")
         sleep(0.05)  # avoiding flood limits
 
 
