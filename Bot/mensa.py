@@ -109,6 +109,14 @@ def get_today_menus():
     return result
 
 
+def override_current_menus():
+    for m in get_all_mensa_subscriptions():
+        data = retrieve_menus(m)
+        for d in data:
+            remove_menus(m, d)
+        add_menus(m, data)
+
+
 def execute_sql(cmd):
     dirname = os.path.dirname(os.path.abspath(__file__))
     dbpath = os.path.join(dirname, DB_NAME)
@@ -168,6 +176,10 @@ def add_menus(mensa, data):
         else:
             values.append("(%r, %r, NULL)" % (mensa, d))
     execute_sql("INSERT INTO menus VALUES %s;" % ", ".join(values))
+
+
+def remove_menus(mensa, date):
+    execute_sql("DELETE FROM menus WHERE mensa=%r AND date=%r" % (mensa, date))
 
 
 def edit_distance(s1, s2):
