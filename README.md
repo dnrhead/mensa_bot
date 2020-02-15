@@ -1,1 +1,2 @@
-# mensa_bot
+# Mensa Bot [![Try it on telegram](https://img.shields.io/badge/try%20it-on%20telegram-0088cc.svg)](http://t.me/mensa_bot_freiburg)
+This bot sends you the current meal from the Mensas in Freiburg (Breisgau). Add it @mensa_bot_freiburg or click [here.](http://t.me/mensa_bot_freiburg)
