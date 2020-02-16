@@ -1,4 +1,4 @@
-from mensa import get_all_user_and_mensas
+from db_tools import get_all_user_and_mensas
 
 users_mensas = get_all_user_and_mensas()
 print("unique sending messages %d" % len(users_mensas))

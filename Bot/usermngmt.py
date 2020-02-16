@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 import logging
-from mensa import *
+from mensa import get_matching_mensa, get_today_menus
+from db_tools import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2
 from send_messages import get_mensa_text
@@ -56,21 +57,25 @@ def show_list(update, context):
     for mensa in mensas_sub:
         update.message.reply_text(mensa)
 
+
 def essen(update, context):
     mensa_menus = get_today_menus()
     subs = get_mensas_subscription(update.message.chat_id)
     for mensa in subs:
         menus = mensa_menus[mensa]
         if not menus:
-            update.message.reply_text("Heute kein Essen in der %s" % mensa, parse_mode='HTML')
+            update.message.reply_text("Heute kein Essen in der %s" %
+                                      mensa, parse_mode='HTML')
             continue
         text = get_mensa_text(mensa, menus)
         update.message.reply_text(text, parse_mode='HTML')
+
 
 def show_help(update, context):
     with open("help.html") as f:
         content = f.readlines()
     update.message.reply_text(''.join(content), parse_mode='HTML')
+
 
 def main():
     """Run bot."""

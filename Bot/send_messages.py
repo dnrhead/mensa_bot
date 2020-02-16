@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import telegram
-from mensa import get_today_menus, get_all_user_and_mensas
+from db_tools import get_today_menus, get_all_user_and_mensas
 from time import sleep
 # Define your own token here
 from token2 import token2
