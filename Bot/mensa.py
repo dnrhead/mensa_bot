@@ -10,8 +10,6 @@ swfr_mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
                'Ausgabestelle EH Freiburg', 'MusiKantine', 'OHG Furtwangen']
 mensas = swfr_mensas + ["Solarcasino"]
 
-DB_NAME = "database.db"
-
 
 def retrieve_menus(mensa):
     if mensa in swfr_mensas:

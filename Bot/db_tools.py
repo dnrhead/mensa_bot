@@ -1,6 +1,8 @@
 import sqlite3
 import os
 
+DB_NAME = "database.db"
+
 
 def execute_sql(cmd):
     dirname = os.path.dirname(os.path.abspath(__file__))
