@@ -56,9 +56,8 @@ def get_menus(mensa, date):
 
 
 def get_all_menus(mensa):
-    return [i[0] for i in execute_sql("SELECT DISTINCT menu FROM menus "
-                                      "WHERE mensa=%r AND menu IS NOT NULL"
-                                      % mensa)]
+    return [i[0] for i in execute_sql("SELECT menu FROM menus WHERE mensa=%r "
+                                      "AND menu IS NOT NULL" % mensa)]
 
 
 def add_menus(mensa, data):
