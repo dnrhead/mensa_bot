@@ -1,7 +1,11 @@
 import sqlite3
 import os
+import re
 
 DB_NAME = "database.db"
+EXCLUDE_WORDS = ["essen", "oder", "wahl", "schneller", "teller", "pavillon",
+                 "spezialitäten", "außerdem", "buffet", "auswahl", "wunsch",
+                 "bunter", "geriebener", "gebackenes"]
 
 
 def execute_sql(cmd):
@@ -67,3 +71,18 @@ def add_menus(mensa, data):
 
 def remove_menus(mensa, date):
     execute_sql("DELETE FROM menus WHERE mensa=%r AND date=%r" % (mensa, date))
+
+
+def get_food_counts(mensa):
+    menus = execute_sql("SELECT DISTINCT menu FROM menus WHERE mensa=%r" %
+                        mensa)
+    d = {}
+    for m, in menus:
+        if not m:
+            continue
+        words = re.findall(r'(\w+)', m)
+        for w in words:
+            if w.islower() or len(w) < 4 or w.lower() in EXCLUDE_WORDS:
+                continue
+            d[w] = d.get(w, 0) + 1
+    return sorted(d.items(), key=lambda x: -x[1])
