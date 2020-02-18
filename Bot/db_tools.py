@@ -49,6 +49,10 @@ def get_all_user_and_mensas():
     return execute_sql("SELECT DISTINCT * FROM users")
 
 
+def get_users():
+    return [i[0] for i in execute_sql("SELECT DISTINCT user FROM users")]
+
+
 def get_menus(mensa, date):
     return [i[0] for i in execute_sql("SELECT DISTINCT menu FROM menus "
                                       "WHERE mensa=%r AND date=%r" %
