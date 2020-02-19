@@ -49,7 +49,7 @@ def send_message_to_all(msg):
 
 def send_message(chat_id, message):
     try:
-        bot.send_message(chat_id=cid, text=msg, parse_mode='HTML')
+        bot.send_message(chat_id=chat_id, text=message, parse_mode='HTML')
     except:
         print("could not send message")
     sleep(0.05)  # avoiding flood limits
