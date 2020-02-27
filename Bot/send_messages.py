@@ -12,6 +12,7 @@ from token2 import token2
 
 def initialiaze():
     global update_id
+    global bot
     # Telegram Bot Authorization Token
     bot = telegram.Bot(token2)
 
@@ -28,7 +29,6 @@ def initialiaze():
 
 def send_menus():
     """Run the bot."""
-    initialiaze()
     mensa_menus = get_today_menus()
     users_mensas = get_all_user_and_mensas()
     print("Sending %d messages" % (len(users_mensas)))
@@ -40,7 +40,6 @@ def send_menus():
 
 
 def send_message_to_all(msg):
-    initialiaze()
     users = get_users()
     print("Sending %d message" % len(users))
     for cid in users:
@@ -66,6 +65,7 @@ def get_mensa_text(mensa, menus):
 
 
 if __name__ == '__main__':
+    initialiaze()
     if len(sys.argv) > 1:
         send_message_to_all(" ".join(sys.argv[1:]))
     else:
