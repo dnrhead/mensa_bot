@@ -31,7 +31,7 @@ def send_menus():
     """Run the bot."""
     mensa_menus = get_today_menus()
     users_mensas = get_all_user_and_mensas()
-    print("Sending %d messages" % (len(users_mensas)))
+    print("Sending menus in %d messages" % (len(users_mensas)))
     for cid, mensa in users_mensas:
         menus = mensa_menus[mensa]
         if not menus:
@@ -41,7 +41,7 @@ def send_menus():
 
 def send_message_to_all(msg):
     users = get_users()
-    print("Sending %d message" % len(users))
+    print("Sending message to all %d users" % len(users))
     for cid in users:
         send_message(cid, msg)
 
@@ -50,7 +50,7 @@ def send_message(chat_id, message):
     try:
         bot.send_message(chat_id=chat_id, text=message, parse_mode='HTML')
     except:
-        print("could not send message")
+        print("Could not send message to", chat_id)
     sleep(0.05)  # avoiding flood limits
 
 
