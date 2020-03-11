@@ -24,7 +24,8 @@ def format_swfr_menu(menu):
 
     def matches(*args):
         return any(x in f.lower() for x in args)
-    res = t + ": " + f.strip(", ").replace(":,", ":")
+    d = {"vegan": " (vegan)", "wunsch-vegan": " (auf Wunsch vegan)"}
+    res = t + d.get(v, "") + ": " + f.strip(", ").replace(":,", ":")
     if "veg" in v or matches(" veg"):
         res += " &#x1F331"
     if matches("hähn", "huhn", "hühn", "pute", "flügel"):
@@ -77,6 +78,8 @@ def retrieve_menus_solarcasino():
             continue
         if date not in result:
             result[date] = []
+        if "&#x1f955" in food:
+            n += " (vegan)"
         result[date].append("Essen %s: %s" % (n, food))
     # Saturdays and sundays do not occur on the site, so add [] manually
     result[get_next_weekday(5)] = []
