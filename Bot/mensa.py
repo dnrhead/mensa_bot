@@ -141,8 +141,12 @@ def edit_distance(s1, s2):
     return previous_row[-1]
 
 
-def get_mensa_list():
-    return "\n".join("(%d)\t%s" % i for i in enumerate(mensas, 1))
+def format_mensa_list(mensa_list=None):
+    if mensa_list is None:
+        mensa_indices = enumerate(mensas, 1)
+    else:
+        mensa_indices = sorted((mensas.index(m) + 1, m) for m in mensa_list)
+    return "\n".join("(%d)\t%s" % i for i in mensa_indices)
 
 
 def get_matching_mensa(mensa):

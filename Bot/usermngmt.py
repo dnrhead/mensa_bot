@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import logging
-from mensa import get_matching_mensa, get_today_menus, get_mensa_list
+from mensa import get_matching_mensa, get_today_menus, format_mensa_list
 from db_tools import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2
@@ -52,10 +52,9 @@ def remove_all(update, context):
 
 
 def show_list(update, context):
-    mensas_sub = get_mensas_subscription(update.message.chat_id)
     update.message.reply_text('Du hast folgende Mensen abboniert:')
-    for mensa in mensas_sub:
-        update.message.reply_text(mensa)
+    mensas_sub = get_mensas_subscription(update.message.chat_id)
+    update.message.reply_text(format_mensa_list(mensas_sub))
 
 
 def essen(update, context):
@@ -74,7 +73,7 @@ def essen(update, context):
 def show_help(update, context):
     with open("help.html") as f:
         content = f.readlines()
-    update.message.reply_text(''.join(content) + get_mensa_list(),
+    update.message.reply_text(''.join(content) + format_mensa_list(),
                               parse_mode='HTML')
 
 
