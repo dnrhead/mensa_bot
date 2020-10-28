@@ -103,17 +103,24 @@ def get_today_menus():
     for m in get_all_mensa_subscriptions():
         menus = get_menus(m, date)
         if menus == []:
-            data = retrieve_menus(m)
-            add_menus(m, data)
-            if date in data:
-                menus = data[date]
+            try:
+                data = retrieve_menus(m)
+                add_menus(m, data)
+                if date in data:
+                    menus = data[date]
+            except:
+                # An error occured during retrieving the menus, just use []
+                menus = []
         result[m] = list(filter(bool, menus))
     return result
 
 
 def override_current_menus():
     for m in get_all_mensa_subscriptions():
-        data = retrieve_menus(m)
+        try:
+            data = retrieve_menus(m)
+        except:
+            continue
         for d in data:
             remove_menus(m, d)
         add_menus(m, data)
