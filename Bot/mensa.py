@@ -134,7 +134,16 @@ def edit_distance(s1, s2):
     return previous_row[-1]
 
 
+def get_mensa_list():
+    return "\n".join("(%d)\t%s" % i for i in enumerate(mensas, 1))
+
+
 def get_matching_mensa(mensa):
+    n = mensa.strip("() ")
+    if n.isdigit():
+        index = int(n) - 1
+        if index < len(mensas):
+            return mensas[index]
     min_ed = 3
     res = None
     for m in mensas:
