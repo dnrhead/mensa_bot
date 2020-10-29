@@ -4,7 +4,7 @@ import logging
 from mensa import get_matching_mensa, get_today_menus, format_mensa_list
 from db_tools import *
 from telegram.ext import Updater, CommandHandler
-from token2 import token2
+from token2 import token2, token_admin, token_admin2
 from send_messages import get_mensa_text
 
 # Enable logging
@@ -20,7 +20,8 @@ def start(update, context):
                               'wird dir geschickt, was es zu essen gibt!'
                               '\nFalls du Hilfe bei der Bedienung des Bots '
                               'brauchst, schicke den /help Befehl.\n')
-    print("start command sent")
+                            
+    print("start command sent", update.message.chat_id)
 
 
 def add(update, context):
@@ -78,6 +79,25 @@ def show_help(update, context):
     update.message.reply_text(''.join(content) + format_mensa_list(),
                               parse_mode='HTML')
 
+def get_info(update, context):
+
+    if(update.message.chat_id == token_admin or update.message.chat_id == token_admin2):
+        users_mensas = get_all_user_and_mensas()
+        update.message.reply_text("unique sending messages %d" % len(users_mensas))
+
+        update.message.reply_text("unique users %d" % len(set([i[0] for i in users_mensas])))
+        update.message.reply_text("unique mensas %d" % len(set([i[1] for i in users_mensas])))
+
+def feedback(update, context):
+   answer_r = "Feedback: \n"
+   answer = " ".join(context.args)
+   if answer.strip() != "":
+       answer = answer_r + answer
+       answer += "\n chat_id: " + str(update.message.chat_id)
+       update.message.reply_text("Danke, dein Feedback wurde gesendet")
+       context.bot.send_message(chat_id=token_admin, text=answer, parse_mode='HTML')
+       context.bot.send_message(chat_id=token_admin2, text=answer, parse_mode='HTML')
+
 
 def main():
     """Run bot."""
@@ -95,6 +115,8 @@ def main():
     dp.add_handler(CommandHandler("removeall", remove_all))
     dp.add_handler(CommandHandler("help", show_help))
     dp.add_handler(CommandHandler("essen", essen))
+    dp.add_handler(CommandHandler("feedback", feedback))
+    dp.add_handler(CommandHandler("get_info", get_info))
     # Start the Bot
     updater.start_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
