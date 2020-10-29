@@ -158,7 +158,7 @@ def get_matching_mensa(mensa):
     min_ed = 3
     res = None
     for m in mensas:
-        for m2 in (m.lower(), m.lower().replace("mensa", "").strip()):
+        for m2 in get_variants(m):
             ed = edit_distance(m2, mensa.lower())
             if ed == 0:
                 return m
@@ -166,3 +166,14 @@ def get_matching_mensa(mensa):
                 min_ed = ed
                 res = m
     return res
+
+
+def get_variants(mensa):
+    replacements = {"mensa": "", "ae": "ä", "oe": "ö", "ue": "ü", "ss": "ß"}
+    variants = {mensa.lower()}
+    for r in replacements.items():
+        newVariants = set()
+        for v in variants:
+            newVariants.add(v.replace(*r).strip())
+        variants |= newVariants
+    return variants
