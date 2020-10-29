@@ -24,26 +24,28 @@ def start(update, context):
 
 
 def add(update, context):
-    mensa_to_add = get_matching_mensa(" ".join(context.args))
+    mensa_txt = " ".join(context.args)
+    mensa_to_add = get_matching_mensa(mensa_txt)
     if mensa_to_add:
         add_mensa_subscription(update.message.chat_id, mensa_to_add)
         update.message.reply_text('%s wurde der Liste hinzugefügt.' %
-                                  mensa_to_add)
+                                  mensa)
         print("Mensa added.")
     else:
-        update.message.reply_text('Konnte nicht hinzugefügt werden. Versuche '
-                                  'es erneut.')
+        update.message.reply_text('Keine passende Mensa "%s" gefunden'
+                                  % mensa_txt)
 
 
 def remove(update, context):
-    mensa_to_remove = get_matching_mensa(" ".join(context.args))
+    mensa_txt = " ".join(context.args)
+    mensa_to_remove = get_matching_mensa(mensa_txt)
     if mensa_to_remove:
         remove_mensa_subscription(update.message.chat_id, mensa_to_remove)
         update.message.reply_text('%s wurde aus der Liste entfernt.' %
                                   mensa_to_remove)
     else:
-        update.message.reply_text('Konnte nicht entfernt werden. Versuche es '
-                                  'erneut. Oder nutze \removeAll')
+        update.message.reply_text('Keine passende Mensa "%s" gefunden'
+                                  % mensa_txt)
 
 
 def remove_all(update, context):
