@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def start(update, context):
     update.message.reply_text('Hallo! Füge Mensen zu deiner Liste mit dem '
                               '/add Befehl hinzu.\nJeden Tag um etwa 9 Uhr '
-                              'wird dir geschick, was es zu Essen gibt!'
+                              'wird dir geschickt, was es zu essen gibt!'
                               '\nFalls du Hilfe bei der Bedienung des Bots '
                               'brauchst, schicke den /help Befehl.\n')
     print("start command sent")
