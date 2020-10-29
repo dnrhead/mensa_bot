@@ -29,7 +29,7 @@ def add(update, context):
     if mensa_to_add:
         add_mensa_subscription(update.message.chat_id, mensa_to_add)
         update.message.reply_text('%s wurde der Liste hinzugefügt.' %
-                                  mensa)
+                                  mensa_to_add)
         print("Mensa added.")
     else:
         update.message.reply_text('Keine passende Mensa "%s" gefunden'
