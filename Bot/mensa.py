@@ -54,12 +54,14 @@ def retrieve_menus_swfr(mensa):
         txt = url.read().decode()
     result = {}
     for i in txt.replace("<br>", ", ").split("<h3>"):
-        m = re.search(r'(\d+\.\d+\.).*?</h3>(.*)', i, re.DOTALL)
+        m = re.search(r'(\d+)\.(\d+)\..*?</h3>(.*)', i, re.DOTALL)
         if not m:
             continue
+        day, month, table = m.groups()
         menus = re.findall(r'<div class="row (.*?) mb-2"><h4.*?>(.*?)</h4>'
-                           r'<div.*?>\s*(.*?)<.*?>(.*?)<', m.group(2))
-        result[m.group(1)] = list(map(format_swfr_menu, menus))
+                           r'<div.*?>\s*(.*?)<.*?>(.*?)<', table)
+        date = format_date_with_year(int(day), int(month))
+        result[date] = list(map(format_swfr_menu, menus))
     # Sundays do not occur on the site, therefore add [] manually
     result[get_next_weekday(6)] = []
     return result
@@ -69,11 +71,12 @@ def retrieve_menus_solarcasino():
     with urlopen("https://kantine.ise.fhg.de/sic/") as url:
         txt = url.read().decode()
     result = {}
-    menus = re.findall(r'<td class="(\d\d.\d\d.)\d+-.*?(\d)".*?>\s*'
+    menus = re.findall(r'<td class="(\d\d)\.(\d\d)\.\d+-.*?(\d)".*?>\s*'
                        r'(.*?)\s*</td>', txt)
-    for date, n, f in menus:
+    for d, m, n, f in menus:
         food_tmp = re.sub(r'<sup>(.*?)(?:</sup>|\))', "", f)
         food = re.sub(r'\s+', " ", food_tmp)
+        date = format_date_with_year(int(d), int(m))
         if food == "-":
             continue
         if date not in result:
@@ -87,8 +90,16 @@ def retrieve_menus_solarcasino():
     return result
 
 
+def format_date_with_year(day, month):
+    today = datetime.today()
+    year = today.year
+    if today.month > month:
+        year += 1
+    return format_date(datetime(year, month, day))
+    
+
 def format_date(date):
-    return "%02d.%02d." % (date.day, date.month)
+    return "%02d.%02d.%d" % (date.day, date.month, date.year)
 
 
 def get_next_weekday(day):
