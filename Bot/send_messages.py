@@ -3,7 +3,7 @@
 import logging
 import telegram
 from db_tools import get_all_user_and_mensas, get_users
-from mensa import get_all_menus, format_date
+from mensa import fetch_all_menus, format_date
 from time import sleep
 import sys
 
@@ -31,7 +31,7 @@ def initialiaze():
 def send_menus():
     """Run the bot."""
     date = format_date(datetime.today())
-    mensa_menus = get_all_menus(date)
+    mensa_menus = fetch_all_menus(date)
     users_mensas = get_all_user_and_mensas()
     print("Sending menus in %d messages" % (len(users_mensas)))
     for cid, mensa in users_mensas:
