@@ -12,7 +12,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
                     '%(message)s', level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-
+weekday_dict = {"/montag": 0, "/dienstag:" 1, "/mittwoch": 2, "/donnerstag:" 3, "/freitag": 4, "/samstag:" 5, "/sonntag:" 6}
 
 def start(update, context):
     update.message.reply_text('Hallo! Füge Mensen zu deiner Liste mit dem '
@@ -84,8 +84,19 @@ def morgen(update, context):
         text = get_mensa_text(mensa, menus)
         update.message.reply_text(text, parse_mode='HTML')
 
+
 def wochentag(update, context):
-    print(update.message)
+    weekday = weekday_dict[update.message['text'])]
+    mensa_menus = get_weekday_menus(weekday)
+    subs = get_mensas_subscription(update.message.chat_id)
+    for mensa in subs:
+        menus = mensa_menus[mensa]
+        if not menus:
+            update.message.reply_text("Morgen kein Essen in der %s" %
+                                      mensa, parse_mode='HTML')
+            continue
+        text = get_mensa_text(mensa, menus)
+        update.message.reply_text(text, parse_mode='HTML')
 
 
 def show_help(update, context):
