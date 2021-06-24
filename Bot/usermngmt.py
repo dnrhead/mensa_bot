@@ -72,6 +72,18 @@ def essen(update, context):
         text = get_mensa_text(mensa, menus)
         update.message.reply_text(text, parse_mode='HTML')
 
+def morgen(update, context):
+    mensa_menus = get_tomorrow_menus():
+    subs = get_mensas_subscription(update.message.chat_id)
+    for mensa in subs:
+        menus = mensa_menus[mensa]
+        if not menus:
+            update.message.reply_text("Morgen kein Essen in der %s" %
+                                      mensa, parse_mode='HTML')
+            continue
+        text = get_mensa_text(mensa, menus)
+        update.message.reply_text(text, parse_mode='HTML')
+
 
 def show_help(update, context):
     with open("help.html") as f:
@@ -117,6 +129,7 @@ def main():
     dp.add_handler(CommandHandler("essen", essen))
     dp.add_handler(CommandHandler("feedback", feedback))
     dp.add_handler(CommandHandler("get_info", get_info))
+    dp.add_handler(CommandHandler("morgen", morgen))
     # Start the Bot
     updater.start_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
