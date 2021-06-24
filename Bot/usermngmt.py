@@ -71,7 +71,7 @@ def essen(update, context, delta):
             update.message.reply_text("%s kein Essen in der %s" %
                                       (mensa, date), parse_mode='HTML')
             continue
-        text = get_mensa_text(mensa, menus)
+        text = get_mensa_text(mensa, menus, date)
         update.message.reply_text(text, parse_mode='HTML')
 
 
