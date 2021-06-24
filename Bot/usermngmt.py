@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import logging
-from mensa import get_matching_mensa, get_menus, format_mensa_list, format_date
+from mensa import get_matching_mensa, get_all_menus, format_mensa_list, format_date
 from db_tools import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2, token_admin, token_admin2
@@ -63,7 +63,7 @@ def show_list(update, context):
 
 def essen(update, context, delta):
     date = format_date(datetime.today() + timedelta(delta))
-    mensa_menus = get_menus(date)
+    mensa_menus = get_all_menus(date)
     subs = get_mensas_subscription(update.message.chat_id)
     for mensa in subs:
         menus = mensa_menus[mensa]

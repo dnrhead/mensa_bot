@@ -108,7 +108,7 @@ def get_next_weekday(day):
     return format_date(today + timedelta(days=diff))
 
 
-def get_menus(date):
+def get_all_menus(date):
     result = {}
     for m in get_all_mensa_subscriptions():
         menus = get_menus(m, date)
