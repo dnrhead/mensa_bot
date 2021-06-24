@@ -12,7 +12,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
                     '%(message)s', level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-weekday_dict = {"/montag": 0, "/dienstag:" 1, "/mittwoch": 2, "/donnerstag:" 3, "/freitag": 4, "/samstag:" 5, "/sonntag:" 6}
+weekday_dict = {"/montag": 0, "/dienstag": 1, "/mittwoch": 2, "/donnerstag": 3, "/freitag": 4, "/samstag": 5, "/sonntag": 6}
 
 def start(update, context):
     update.message.reply_text('Hallo! Füge Mensen zu deiner Liste mit dem '
