@@ -143,7 +143,9 @@ def get_tomorrow_menus():
     return result
 
 def get_weekday_menus(weekday):
-    date = get_next_weekday(weekday)
+    today = datetime.today()
+    diff = ((weekday % 7) - today.weekday())
+    date = format_date(today + timedelta(days=diff))
     result = {}
     for m in get_all_mensa_subscriptions():
         menus = get_menus(m, date)

@@ -86,13 +86,13 @@ def morgen(update, context):
 
 
 def wochentag(update, context):
-    weekday = weekday_dict[update.message['text']]
+    weekday = weekday_dict[update.message['text'].lower()]
     mensa_menus = get_weekday_menus(weekday)
     subs = get_mensas_subscription(update.message.chat_id)
     for mensa in subs:
         menus = mensa_menus[mensa]
         if not menus:
-            update.message.reply_text("Morgen kein Essen in der %s" %
+            update.message.reply_text("An diesem Wochentag gibt es kein Essen in der %s" %
                                       mensa, parse_mode='HTML')
             continue
         text = get_mensa_text(mensa, menus)
