@@ -6,6 +6,7 @@ from db_tools import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2, token_admin, token_admin2
 from send_messages import get_mensa_text
+from datetime import datetime, timedelta
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
