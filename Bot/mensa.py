@@ -108,44 +108,16 @@ def get_next_weekday(day):
     return format_date(today + timedelta(days=diff))
 
 
-def get_today_menus():
-    date = format_date(datetime.today())
-    result = {}
-    for m in get_all_mensa_subscriptions():
-        menus = get_menus(m, date)
-        if menus == []:
-            try:
-                data = retrieve_menus(m)
-                add_menus(m, data)
-                if date in data:
-                    menus = data[date]
-            except:
-                # An error occured during retrieving the menus, just use []
-                menus = []
-        result[m] = list(filter(bool, menus))
-    return result
+def get_today_menus(when, weekday=None):
+    if when == 2: # week
+        today = datetime.today()
+        diff = ((weekday % 7) - today.weekday())
+        date = format_date(today + timedelta(days=diff))
+    elif when == 1: #tomorrow
+        date = format_date(datetime.today() + timedelta(days=1))
+    else:
+        date = format_date(datetime.today())
 
-def get_tomorrow_menus():
-    date = format_date(datetime.today() + timedelta(days=1))
-    result = {}
-    for m in get_all_mensa_subscriptions():
-        menus = get_menus(m, date)
-        if menus == []:
-            try:
-                data = retrieve_menus(m)
-                add_menus(m, data)
-                if date in data:
-                    menus = data[date]
-            except:
-                # An error occured during retrieving the menus, just use []
-                menus = []
-        result[m] = list(filter(bool, menus))
-    return result
-
-def get_weekday_menus(weekday):
-    today = datetime.today()
-    diff = ((weekday % 7) - today.weekday())
-    date = format_date(today + timedelta(days=diff))
     result = {}
     for m in get_all_mensa_subscriptions():
         menus = get_menus(m, date)

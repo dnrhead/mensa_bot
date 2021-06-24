@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import logging
-from mensa import get_matching_mensa, get_today_menus, format_mensa_list, get_tomorrow_menus, get_weekday_menus
+from mensa import get_matching_mensa, get_today_menus, format_mensa_list
 from db_tools import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2, token_admin, token_admin2
@@ -61,7 +61,7 @@ def show_list(update, context):
 
 
 def essen(update, context):
-    mensa_menus = get_today_menus()
+    mensa_menus = get_today_menus(0)
     subs = get_mensas_subscription(update.message.chat_id)
     for mensa in subs:
         menus = mensa_menus[mensa]
@@ -73,7 +73,7 @@ def essen(update, context):
         update.message.reply_text(text, parse_mode='HTML')
 
 def morgen(update, context):
-    mensa_menus = get_tomorrow_menus()
+    mensa_menus = get_today_menus(1)
     subs = get_mensas_subscription(update.message.chat_id)
     for mensa in subs:
         menus = mensa_menus[mensa]
@@ -87,7 +87,7 @@ def morgen(update, context):
 
 def wochentag(update, context):
     weekday = weekday_dict[update.message['text'].lower()]
-    mensa_menus = get_weekday_menus(weekday)
+    mensa_menus = get_today_menus(2, weekday)
     subs = get_mensas_subscription(update.message.chat_id)
     for mensa in subs:
         menus = mensa_menus[mensa]
