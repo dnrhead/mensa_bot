@@ -126,7 +126,7 @@ def get_today_menus():
     return result
 
 def get_tomorrow_menus():
-    date = format_date(datetime.today() + datetime.timedelta(days=1))
+    date = format_date(datetime.today() + timedelta(days=1))
     result = {}
     for m in get_all_mensa_subscriptions():
         menus = get_menus(m, date)
