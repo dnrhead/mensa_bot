@@ -73,7 +73,7 @@ def essen(update, context):
         update.message.reply_text(text, parse_mode='HTML')
 
 def morgen(update, context):
-    mensa_menus = get_tomorrow_menus():
+    mensa_menus = get_tomorrow_menus()
     subs = get_mensas_subscription(update.message.chat_id)
     for mensa in subs:
         menus = mensa_menus[mensa]
