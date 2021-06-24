@@ -75,8 +75,11 @@ def essen(update, context, delta):
         update.message.reply_text(text, parse_mode='HTML')
 
 
-def wochentag(update, context, weekday):
-    essen(update, context, (weekday % 7) - datetime.today().weekday())
+def wochentag(weekday):
+    delta = weekday - datetime.today().weekday()
+    def f(update, context):
+        essen(update, context, delta)
+    return f
 
 
 def show_help(update, context):
@@ -133,7 +136,7 @@ def main():
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
                 "samstag", "sonntag"]
     for i, w in enumerate(weekdays):
-        dp.add_handler(CommandHandler(w, lambda u, c: wochentag(u, c, i)))
+        dp.add_handler(CommandHandler(w, wochentag(i)))
     # Start the Bot
     updater.start_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
