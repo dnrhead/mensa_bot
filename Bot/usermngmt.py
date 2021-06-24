@@ -86,7 +86,7 @@ def morgen(update, context):
 
 
 def wochentag(update, context):
-    weekday = weekday_dict[update.message['text'])]
+    weekday = weekday_dict[update.message['text']]
     mensa_menus = get_weekday_menus(weekday)
     subs = get_mensas_subscription(update.message.chat_id)
     for mensa in subs:
