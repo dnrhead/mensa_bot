@@ -69,15 +69,15 @@ def essen(update, context, delta):
         menus = mensa_menus[mensa]
         if not menus:
             update.message.reply_text("%s kein Essen in der %s" %
-                                      (mensa, date), parse_mode='HTML')
+                                      (date, mensa), parse_mode='HTML')
             continue
         text = get_mensa_text(mensa, menus, date)
         update.message.reply_text(text, parse_mode='HTML')
 
 
-def wochentag(weekday):
-    delta = weekday - datetime.today().weekday()
+def wochentag(weekday): 
     def f(update, context):
+        delta = weekday - datetime.today().weekday()
         essen(update, context, delta)
     return f
 
