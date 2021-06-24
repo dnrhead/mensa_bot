@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import logging
-from mensa import get_matching_mensa, get_today_menus, format_mensa_list, get_tomorrow_menus
+from mensa import get_matching_mensa, get_today_menus, format_mensa_list, get_tomorrow_menus, get_weekday_menus
 from db_tools import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2, token_admin, token_admin2
@@ -84,6 +84,9 @@ def morgen(update, context):
         text = get_mensa_text(mensa, menus)
         update.message.reply_text(text, parse_mode='HTML')
 
+def wochentag(update, context):
+    print(update.message)
+
 
 def show_help(update, context):
     with open("help.html") as f:
@@ -129,7 +132,14 @@ def main():
     dp.add_handler(CommandHandler("essen", essen))
     dp.add_handler(CommandHandler("feedback", feedback))
     dp.add_handler(CommandHandler("get_info", get_info))
+    
     dp.add_handler(CommandHandler("morgen", morgen))
+    dp.add_handler(CommandHandler("montag", wochentag))
+    dp.add_handler(CommandHandler("dienstag", wochentag))
+    dp.add_handler(CommandHandler("mittwoch", wochentag))
+    dp.add_handler(CommandHandler("donnerstag", wochentag))
+    dp.add_handler(CommandHandler("freitag", wochentag))
+    dp.add_handler(CommandHandler("samstag", wochentag))
     # Start the Bot
     updater.start_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or

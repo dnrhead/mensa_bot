@@ -142,6 +142,22 @@ def get_tomorrow_menus():
         result[m] = list(filter(bool, menus))
     return result
 
+def get_weekday_menus(weekday):
+    date = get_next_weekday(weekday)
+    for m in get_all_mensa_subscriptions():
+        menus = get_menus(m, date)
+        if menus == []:
+            try:
+                data = retrieve_menus(m)
+                add_menus(m, data)
+                if date in data:
+                    menus = data[date]
+            except:
+                # An error occured during retrieving the menus, just use []
+                menus = []
+        result[m] = list(filter(bool, menus))
+    return result
+
 
 def override_current_menus():
     for m in get_all_mensa_subscriptions():
