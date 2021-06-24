@@ -144,6 +144,7 @@ def get_tomorrow_menus():
 
 def get_weekday_menus(weekday):
     date = get_next_weekday(weekday)
+    result = {}
     for m in get_all_mensa_subscriptions():
         menus = get_menus(m, date)
         if menus == []:
