@@ -108,16 +108,7 @@ def get_next_weekday(day):
     return format_date(today + timedelta(days=diff))
 
 
-def get_today_menus(when, weekday=None):
-    if when == 2: # week
-        today = datetime.today()
-        diff = ((weekday % 7) - today.weekday())
-        date = format_date(today + timedelta(days=diff))
-    elif when == 1: #tomorrow
-        date = format_date(datetime.today() + timedelta(days=1))
-    else:
-        date = format_date(datetime.today())
-
+def get_menus(date):
     result = {}
     for m in get_all_mensa_subscriptions():
         menus = get_menus(m, date)

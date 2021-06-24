@@ -3,12 +3,13 @@
 import logging
 import telegram
 from db_tools import get_all_user_and_mensas, get_users
-from mensa import get_today_menus
+from mensa import get_menus, format_date
 from time import sleep
 import sys
 
 # Define your own token here
 from token2 import token2
+
 
 def initialiaze():
     global update_id
@@ -29,14 +30,15 @@ def initialiaze():
 
 def send_menus():
     """Run the bot."""
-    mensa_menus = get_today_menus()
+    date = format_date(datetime.today())
+    mensa_menus = get_menus(date)
     users_mensas = get_all_user_and_mensas()
     print("Sending menus in %d messages" % (len(users_mensas)))
     for cid, mensa in users_mensas:
         menus = mensa_menus[mensa]
         if not menus:
             continue
-        send_message(cid, get_mensa_text(mensa, menus))
+        send_message(cid, get_mensa_text(mensa, menus, date))
 
 
 def send_message_to_all(msg):
@@ -54,8 +56,8 @@ def send_message(chat_id, message):
     sleep(0.05)  # avoiding flood limits
 
 
-def get_mensa_text(mensa, menus):
-    res = "<u><b>%s:</b></u>" % mensa
+def get_mensa_text(mensa, menus, date):
+    res = "<u><b>%s (%s):</b></u>" % (mensa, date)
     for m in menus:
         num = m.find("&#x1F")
         symbols = "" if num == -1 else " " + m[num:]
