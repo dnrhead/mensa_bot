@@ -132,7 +132,7 @@ def main():
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
                 "samstag", "sonntag"]
     for i, w in enumerate(weekdays):
-        dp.add_handler(CommandHandler(w, lambda u, c: wochentag(u, c, i))
+        dp.add_handler(CommandHandler(w, lambda u, c: wochentag(u, c, i)))
     # Start the Bot
     updater.start_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
