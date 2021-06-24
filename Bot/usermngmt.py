@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import logging
-from mensa import get_matching_mensa, get_today_menus, format_mensa_list
+from mensa import get_matching_mensa, get_today_menus, format_mensa_list, get_tomorrow_menus
 from db_tools import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2, token_admin, token_admin2
