@@ -6,7 +6,7 @@ from db_tools import get_all_user_and_mensas, get_users
 from mensa import fetch_all_menus, format_date
 from time import sleep
 import sys
-
+from datetime import datetime
 # Define your own token here
 from token2 import token2
 
