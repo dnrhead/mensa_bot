@@ -1,9 +1,13 @@
 import re
 from db_tools import get_all_menus
 
-EXCLUDE_WORDS = ["essen", "oder", "wahl", "schneller", "teller", "pavillon",
+EXCLUDE_WORDS = {"essen", "oder", "wahl", "schneller", "teller", "pavillon",
                  "spezialitäten", "außerdem", "buffet", "auswahl", "wunsch",
-                 "bunter", "geriebener", "gebackenes"]
+                 "bunter", "geriebener", "gebackenes", "regio", "dicke",
+                 "woche", "paniertes", "mensa", "abendessen", "ausgabe",
+                 "rempartstrasse", "rempartstraße", "wochenangebot",
+                 "ausgabezeit", "buntes", "rote", "gebratener", "gebackener",
+                 "gebackene", "newcomer"}
 FOOD_TYPES = {"x1F331": "vegetarisch", "x1F414": "Geflügel", "x1F411": "Lamm",
               "x1F41F": "Fisch", "x1F416": "Schwein", "x1F404": "Rind"}
 
