@@ -8,14 +8,16 @@ swfr_mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
                'Mensa Offenburg', 'Mensa Gengenbach', 'Mensa Kehl',
                'Mensa Schwenningen', 'Mensa Trossingen', 'Mensa Loerrach',
                'Ausgabestelle EH Freiburg', 'MusiKantine', 'OHG Furtwangen']
-mensas = swfr_mensas + ["Solarcasino"]
+mensas = swfr_mensas + ['Fraunhofer IPM Kantine']
 
+MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
+          "August", "September", "Oktober", "November", "Dezember"]
 
 def retrieve_menus(mensa):
     if mensa in swfr_mensas:
         return retrieve_menus_swfr(mensa)
-    if mensa == "Solarcasino":
-        return retrieve_menus_solarcasino()
+    if mensa == 'Fraunhofer IPM Kantine':
+        return retrieve_menus_ipm()
     raise NotImplementedError("Unhandled case: %r" % mensa)
 
 
@@ -60,42 +62,44 @@ def retrieve_menus_swfr(mensa):
         day, month, table = m.groups()
         menus = re.findall(r'<div class="row (.*?) mb-2"><h4.*?>(.*?)</h4>'
                            r'<div.*?>\s*(.*?)<.*?>(.*?)<', table)
-        date = format_date_with_year(int(day), int(month))
-        result[date] = list(map(format_swfr_menu, menus))
+        date = get_date_with_year(int(day), int(month))
+        result[format_date(date)] = list(map(format_swfr_menu, menus))
     # Sundays do not occur on the site, therefore add [] manually
     result[get_next_weekday(6)] = []
     return result
 
 
-def retrieve_menus_solarcasino():
-    with urlopen("https://kantine.ise.fhg.de/sic/") as url:
+def retrieve_menus_ipm():
+    with urlopen("https://www.ipm.fraunhofer.de/de/ueber-fraunhofer-ipm/"
+                 "fraunhofer-ipm-kantine.html") as url:
         txt = url.read().decode()
+    bodies = re.findall(r'<tbody>(.*?)</tbody>', txt, re.DOTALL)
+    # TODO: Also search the next week
+    txt = bodies[0]
+    m = re.search(r'<h4>(.*?),\s*(\d+)\.', txt)
+    if not m:
+        return {}
+    # TODO: Exception handling!
+    start_date = get_date_with_year(int(m.group(2)),
+                                    MONTHS.index(m.group(1)) + 1)
     result = {}
-    menus = re.findall(r'<td class="(\d\d)\.(\d\d)\.\d+-.*?(\d)".*?>\s*'
-                       r'(.*?)\s*</td>', txt)
-    for d, m, n, f in menus:
-        food_tmp = re.sub(r'<sup>(.*?)(?:</sup>|\))', "", f)
-        food = re.sub(r'\s+', " ", food_tmp)
-        date = format_date_with_year(int(d), int(m))
-        if food == "-":
-            continue
-        if date not in result:
-            result[date] = []
-        if "&#x1f955" in food:
-            n += " (vegan)"
-        result[date].append("Essen %s: %s" % (n, food))
-    # Saturdays and sundays do not occur on the site, so add [] manually
-    result[get_next_weekday(5)] = []
-    result[get_next_weekday(6)] = []
+    menus = re.findall(r'<tr>\s*<td>.*?</td>\s*<td>(.*?)</td>', txt, re.DOTALL)
+    for i in range(7):
+        raw = menus[i] if i < len(menus) else ""
+        day = format_date(start_date + timedelta(i))
+        result[day] = []
+        for j, raw_meal in enumerate(re.findall(r'<li>(.*?)</li>', raw), 1):
+            meal = re.sub(r'\s*<sup>.*?</sup>', "", raw_meal).strip()
+            result[day].append(f"Essen {j:}: {meal:}")
     return result
 
 
-def format_date_with_year(day, month):
+def get_date_with_year(day, month):
     today = datetime.today()
     year = today.year
     if today.month > month:
         year += 1
-    return format_date(datetime(year, month, day))
+    return datetime(year, month, day)
     
 
 def format_date(date):
