@@ -73,25 +73,41 @@ def retrieve_menus_ipm():
     with urlopen("https://www.ipm.fraunhofer.de/de/ueber-fraunhofer-ipm/"
                  "fraunhofer-ipm-kantine.html") as url:
         txt = url.read().decode()
-    bodies = re.findall(r'<tbody>(.*?)</tbody>', txt, re.DOTALL)
-    # TODO: Also search the next week
-    txt = bodies[0]
-    m = re.search(r'<h4>(.*?),\s*(\d+)\.', txt)
-    if not m:
-        return {}
-    # TODO: Exception handling!
-    start_date = get_date_with_year(int(m.group(2)),
-                                    MONTHS.index(m.group(1)) + 1)
     result = {}
-    menus = re.findall(r'<tr>\s*<td>.*?</td>\s*<td>(.*?)</td>', txt, re.DOTALL)
-    for i in range(7):
-        raw = menus[i] if i < len(menus) else ""
-        day = format_date(start_date + timedelta(i))
-        result[day] = []
-        for j, raw_meal in enumerate(re.findall(r'<li>(.*?)</li>', raw), 1):
-            meal = re.sub(r'\s*<sup>.*?</sup>', "", raw_meal).strip()
-            result[day].append(f"Essen {j:}: {meal:}")
+    for b in re.findall(r'<tbody>(.*?)</tbody>', txt, re.DOTALL):
+        m = re.search(r'<h4>(.*?),\s*(\d+)\.', b)
+        if not m:
+            continue
+        start_date = get_date_with_year(int(m.group(2)),
+                                        MONTHS.index(m.group(1)) + 1)
+        menus = re.findall(r'<tr>\s*<td>.*?</td>\s*<td>(.*?)</td>', txt,
+                           re.DOTALL)
+        for i in range(7):
+            raw = menus[i] if i < len(menus) else ""
+            day = format_date(start_date + timedelta(i))
+            result[day] = []
+            raw_meals = re.findall(r'<li>(.*?)</li>', raw)
+            for j, r in enumerate(raw_meals, 1):
+                tp = re.search("<i>(.*?)</i>", r)
+                meal = re.sub(r'\s*<sup>.*?</sup>', "", r.replace(
+                    tp.group(0), "").replace("&nbsp;", "")).strip() + " " + \
+                    " ".join(get_icons(tp.group(1)))
+                result[day].append(f"Essen {j:}: {meal:}")
     return result
+
+
+def get_icons(txt):
+    txt2 = txt.lower()
+    res = []
+    if "schwein" in txt2:
+        res.append("&#x1F416")
+    if "rind" in txt2:
+        res.append("&#x1F404")
+    if "veg" in txt2:
+        res.append("&#x1F331")
+    if "fisch" in txt2:
+        res.append("&#x1F41F")
+    return res
 
 
 def get_date_with_year(day, month):
