@@ -71,9 +71,10 @@ def retrieve_menus_swfr(mensa):
             continue
         day, month, table = m.groups()
         menus = re.findall(r'<h5>(.*?)</h5>\s*(.*?)\s*</div>\s*<small.*?>(.*?)'
-                           r'</small>.*?(?:<small class="zusatzsstoffe" x-show'
-                           r'="!showAllergenes">Kennzeichnungen/Zusatzstoffe:'
-                           r'\s*(.*?)<br>)?', table, re.DOTALL)
+                           r'</small>.*?</dl>\s*(?:<small class="zusatzsstoffe"'
+                           r' x-show="!showAllergenes">Kennzeichnungen/'
+                           r'Zusatzstoffe:<br>(.*?)</small>)?', table,
+                           re.DOTALL)
         date = get_date_with_year(int(day), int(month))
         result[format_date(date)] = list(map(format_swfr_menu, menus))
     # Sundays do not occur on the site, therefore add [] manually
