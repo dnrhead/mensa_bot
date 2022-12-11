@@ -16,6 +16,7 @@ mensas = swfr_mensas + ['Fraunhofer IPM Kantine']
 MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
           "August", "September", "Oktober", "November", "Dezember"]
 
+
 def retrieve_menus(mensa):
     if mensa in swfr_mensas:
         return retrieve_menus_swfr(mensa)
@@ -41,7 +42,7 @@ def format_swfr_menu(title, flag, desc, ingredients):
     if matches("lamm"):
         res += " &#x1F411"
     if "sch" in ingredients:
-       res += " &#x1F416"
+        res += " &#x1F416"
     if "ri" in ingredients:
         res += " &#x1F404"
     if "nF" in ingredients or \
@@ -62,6 +63,7 @@ def get_flag(bs_element):
         return re.search(r'/([^/]*?)\.svg',
                          match.get_attribute_list("src")[0]).group(1)
 
+
 def get_ingredients(bs_element):
     match = bs_element.find("small", {"x-show": "!showAllergenes"})
     if not match:
@@ -71,7 +73,7 @@ def get_ingredients(bs_element):
 
 def retrieve_menus_swfr(mensa):
     with urlopen(get_swfr_url(mensa)) as url:
-        bs = BeautifulSoup(url, "lxml") 
+        bs = BeautifulSoup(url, "lxml")
     result = {}
     for d in bs.findAll("div", {"class": "menu-tagesplan"}):
         h3 = d.findChild("h3")
@@ -81,7 +83,7 @@ def retrieve_menus_swfr(mensa):
         if not date_match:
             continue
         menus = []
-        for c in d.findChildren("div", {"class":"col-span-1 bg-lighter-cyan py-20px px-15px flex flex-col"}):
+        for c in d.findChildren("div", {"class": "col-span-1 bg-lighter-cyan py-20px px-15px flex flex-col"}):
             title = c.find("h5").getText()
             desc = c.find("small", {"class": "extra-text mb-15px"}).getText(", ").replace(":,", ":")
             menus.append(format_swfr_menu(title, get_flag(c), desc,
@@ -141,7 +143,7 @@ def get_date_with_year(day, month):
     if today.month > month:
         year += 1
     return datetime(year, month, day)
-    
+
 
 def format_date(date):
     return "%02d.%02d.%d" % (date.day, date.month, date.year)
