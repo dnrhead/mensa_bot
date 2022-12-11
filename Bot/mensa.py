@@ -3,11 +3,13 @@ import re
 from datetime import datetime, timedelta
 from db_tools import *
 
-swfr_mensas = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
-               'Mensa Littenweiler', 'Mensa Flugplatz', 'Mensa Furtwangen',
-               'Mensa Offenburg', 'Mensa Gengenbach', 'Mensa Kehl',
-               'Mensa Schwenningen', 'Mensa Trossingen', 'Mensa Loerrach',
-               'Ausgabestelle EH Freiburg', 'MusiKantine', 'OHG Furtwangen']
+mensas_freiburg = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
+                   'Mensa Littenweiler', 'Mensa Flugplatz',
+                   'Ausgabestelle EH Freiburg', 'MusiKantine']
+swfr_mensas = mensas_freiburg + ['Mensa Furtwangen', 'OHG Furtwangen',
+                                 'Mensa Offenburg', 'Mensa Gengenbach',
+                                 'Mensa Kehl', 'Mensa Schwenningen',
+                                 'Mensa Trossingen', 'Mensa Loerrach']
 mensas = swfr_mensas + ['Fraunhofer IPM Kantine']
 
 MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
@@ -49,10 +51,14 @@ def format_swfr_menu(menu):
     return res
 
 
+def get_swfr_url(mensa):
+    mensa_url = mensa.lower().replace(" ", "-")
+    suffix = f"freiburg/{mensa_url}" if mensa in mensas_freiburg else mensa_url
+    return "https://www.swfr.de/essen/mensen-cafes-speiseplaene/" + suffix
+
+
 def retrieve_menus_swfr(mensa):
-    assert mensa in swfr_mensas
-    with urlopen("https://www.swfr.de/essen-trinken/speiseplaene/"
-                 + mensa.lower().replace(" ", "-")) as url:
+    with urlopen(get_swfr_url(mensa)) as url:
         txt = url.read().decode()
     result = {}
     for i in txt.replace("<br>", ", ").split("<h3>"):
