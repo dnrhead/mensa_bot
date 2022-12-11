@@ -5,7 +5,7 @@ from mensa import get_matching_mensa, fetch_all_menus, format_mensa_list, format
 from db_tools import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2, token_admin, token_admin2
-from send_messages import get_mensa_text
+from send_messages import get_mensa_text, send_message_to_all
 from datetime import datetime, timedelta
 
 # Enable logging
@@ -100,6 +100,12 @@ def get_info(update, context):
         update.message.reply_text("unique mensas %d" %
                                   len(set([i[1] for i in users_mensas])))
 
+
+def announce(update, context):
+    if update.message.chat_id in [token_admin, token_admin2]:
+        send_message_to_all(" ".join(context.args))
+
+
 def feedback(update, context):
    answer_r = "Feedback: \n"
    answer = " ".join(context.args)
@@ -131,6 +137,7 @@ def main():
     dp.add_handler(CommandHandler("essen", lambda u, c: essen(u, c, 0)))
     dp.add_handler(CommandHandler("feedback", feedback))
     dp.add_handler(CommandHandler("get_info", get_info))
+    dp.add_handler(CommandHandler("announce", announce))
     
     dp.add_handler(CommandHandler("morgen", lambda u, c: essen(u, c, 1)))
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
