@@ -1,5 +1,6 @@
 from urllib.request import urlopen
 import re
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from db_tools import *
 
@@ -23,34 +24,28 @@ def retrieve_menus(mensa):
     raise NotImplementedError("Unhandled case: %r" % mensa)
 
 
-def format_swfr_menu(menu):
-    title, flag, desc, ingredients = menu
-
+def format_swfr_menu(title, flag, desc, ingredients):
     def matches(*args):
         return any(x in desc.lower() for x in args)
-    formatted_desc = desc.replace("<br>", ", ")
     res = title
-    m = re.search(r'/([^/]*?)\.svg', flag)
-    if not m:
-        res += f": {formatted_desc}"
+    if flag in ["vegan", "vegetarisch"]:
+        res += f" ({flag}): {desc} &#x1F331"
+    elif flag == "vegan-aufwunsch":
+        res += f" (auf Wunsch vegan): {desc} &#x1F331"
+    else:
+        res += f": {desc}"
         if matches(" veg"):
             res += " &#x1F331"
-    else:
-        v = m.group(1)
-        if v in ["vegan", "vegetarisch"]:
-            res += f" ({v}): {formatted_desc} &#x1F331"
-        elif v == "vegan-aufwunsch":
-            res += f" (auf Wunsch vegan): {formatted_desc} &#x1F331"
     if matches("hähn", "huhn", "hühn", "pute", "flügel"):
         res += " &#x1F414"
     if matches("lamm"):
         res += " &#x1F411"
-    i = ingredients.split(",")
-    if "sch" in i:
+    if "sch" in ingredients:
        res += " &#x1F416"
-    if "ri" in i:
+    if "ri" in ingredients:
         res += " &#x1F404"
-    if "nF" in i or matches("fisch", "pangasius", "lachs", "forelle", "meeres"):
+    if "nF" in ingredients or \
+       matches("fisch", "pangasius", "lachs", "forelle", "meeres"):
         res += " &#x1F41F"
     return res
 
@@ -61,22 +56,39 @@ def get_swfr_url(mensa):
     return "https://www.swfr.de/essen/mensen-cafes-speiseplaene/" + suffix
 
 
+def get_flag(bs_element):
+    match = bs_element.find("img", {"class": "w-30px"})
+    if match:
+        return re.search(r'/([^/]*?)\.svg',
+                         match.get_attribute_list("src")[0]).group(1)
+
+def get_ingredients(bs_element):
+    match = bs_element.find("small", {"x-show": "!showAllergenes"})
+    if not match:
+        return []
+    return match.contents[2].split(",")
+
+
 def retrieve_menus_swfr(mensa):
     with urlopen(get_swfr_url(mensa)) as url:
-        txt = url.read().decode()
+        bs = BeautifulSoup(url, "lxml") 
     result = {}
-    for i in txt.split("<h3>"):
-        m = re.search(r'(\d+)\.(\d+)\..*?</h3>(.*)', i, re.DOTALL)
-        if not m:
+    for d in bs.findAll("div", {"class": "menu-tagesplan"}):
+        h3 = d.findChild("h3")
+        if not h3:
             continue
-        day, month, table = m.groups()
-        menus = re.findall(r'<h5>(.*?)</h5>\s*(.*?)\s*</div>\s*<small.*?>(.*?)'
-                           r'</small>.*?</dl>\s*(?:<small class="zusatzsstoffe"'
-                           r' x-show="!showAllergenes">Kennzeichnungen/'
-                           r'Zusatzstoffe:<br>(.*?)</small>)?', table,
-                           re.DOTALL)
+        date_match = re.search(r'(\d+)\.(\d+)\.', h3.getText())
+        if not date_match:
+            continue
+        menus = []
+        for c in d.findChildren("div", {"class":"col-span-1 bg-lighter-cyan py-20px px-15px flex flex-col"}):
+            title = c.find("h5").getText()
+            desc = c.find("small", {"class": "extra-text mb-15px"}).getText(", ").replace(":,", ":")
+            menus.append(format_swfr_menu(title, get_flag(c), desc,
+                                          get_ingredients(c)))
+        day, month = date_match.groups()
         date = get_date_with_year(int(day), int(month))
-        result[format_date(date)] = list(map(format_swfr_menu, menus))
+        result[format_date(date)] = menus
     # Sundays do not occur on the site, therefore add [] manually
     result[get_next_weekday(6)] = []
     return result
