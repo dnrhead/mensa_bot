@@ -24,29 +24,33 @@ def retrieve_menus(mensa):
 
 
 def format_swfr_menu(menu):
-    v, t, f, i = menu
+    title, flag, desc, ingredients = menu
 
     def matches(*args):
-        return any(x in f.lower() for x in args)
-    d = {"vegan": " (vegan)", "wunsch-vegan": " (auf Wunsch vegan)"}
-    res = t + d.get(v, "") + ": " + f.strip(", ").replace(":,", ":")
-    if "veg" in v or matches(" veg"):
-        res += " &#x1F331"
+        return any(x in desc.lower() for x in args)
+    formatted_desc = desc.replace("<br>", ", ")
+    res = title
+    m = re.search(r'/([^/]*?)\.svg', flag)
+    if not m:
+        res += f": {formatted_desc}"
+        if matches(" veg"):
+            res += " &#x1F331"
+    else:
+        v = m.group(1)
+        if v in ["vegan", "vegetarisch"]:
+            res += f" ({v}): {formatted_desc} &#x1F331"
+        elif v == "vegan-aufwunsch":
+            res += f" (auf Wunsch vegan): {formatted_desc} &#x1F331"
     if matches("hähn", "huhn", "hühn", "pute", "flügel"):
         res += " &#x1F414"
     if matches("lamm"):
         res += " &#x1F411"
-    is_fish = matches("fisch", "pangasius", "lachs", "forelle", "meeres")
-    if "Zusatzstoffe:" not in i:
-        if is_fish:
-            res += " &#x1F41F"
-        return res
-    i2 = i[i.index(":"):]
-    if "sch" in i2:
-        res += " &#x1F416"
-    if "ri" in i2:
+    i = ingredients.split(",")
+    if "sch" in i:
+       res += " &#x1F416"
+    if "ri" in i:
         res += " &#x1F404"
-    if "nF" in i2 or is_fish:
+    if "nF" in i or matches("fisch", "pangasius", "lachs", "forelle", "meeres"):
         res += " &#x1F41F"
     return res
 
@@ -61,13 +65,15 @@ def retrieve_menus_swfr(mensa):
     with urlopen(get_swfr_url(mensa)) as url:
         txt = url.read().decode()
     result = {}
-    for i in txt.replace("<br>", ", ").split("<h3>"):
+    for i in txt.split("<h3>"):
         m = re.search(r'(\d+)\.(\d+)\..*?</h3>(.*)', i, re.DOTALL)
         if not m:
             continue
         day, month, table = m.groups()
-        menus = re.findall(r'<div class="row (.*?) mb-2"><h4.*?>(.*?)</h4>'
-                           r'<div.*?>\s*(.*?)<.*?>(.*?)<', table)
+        menus = re.findall(r'<h5>(.*?)</h5>\s*(.*?)\s*</div>\s*<small.*?>(.*?)'
+                           r'</small>.*?(?:<small class="zusatzsstoffe" x-show'
+                           r'="!showAllergenes">Kennzeichnungen/Zusatzstoffe:'
+                           r'\s*(.*?)<br>)?', table, re.DOTALL)
         date = get_date_with_year(int(day), int(month))
         result[format_date(date)] = list(map(format_swfr_menu, menus))
     # Sundays do not occur on the site, therefore add [] manually
