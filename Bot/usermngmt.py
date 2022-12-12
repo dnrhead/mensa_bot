@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import logging
-from mensa import get_matching_mensa, fetch_all_menus, format_mensa_list, format_date
+from mensa import get_matching_mensa, fetch_all_menus, format_mensa_list, format_date, override_current_menus
 from db_tools import *
 from telegram.ext import Updater, CommandHandler
 from token2 import token2, token_admin, token_admin2
@@ -138,6 +138,7 @@ def main():
     dp.add_handler(CommandHandler("feedback", feedback))
     dp.add_handler(CommandHandler("get_info", get_info))
     dp.add_handler(CommandHandler("announce", announce))
+    dp.add_handler(CommandHandler("overwrite", override_current_menus))
     
     dp.add_handler(CommandHandler("morgen", lambda u, c: essen(u, c, 1)))
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
