@@ -65,6 +65,8 @@ def get_all_menus(mensa):
 
 
 def add_menus(mensa, data):
+    if not data:
+        return
     values = []
     for d in data:
         if data[d]:
