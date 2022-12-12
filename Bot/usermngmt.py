@@ -103,7 +103,7 @@ def get_info(update, context):
 
 def announce(update, context):
     if update.message.chat_id in [token_admin, token_admin2]:
-        send_message_to_all(" ".join(context.args))
+        send_message_to_all(context.bot, " ".join(context.args))
 
 
 def feedback(update, context):
