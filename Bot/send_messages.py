@@ -11,23 +11,6 @@ from datetime import datetime
 from token2 import token2
 
 
-def initialiaze():
-    
-    # Telegram Bot Authorization Token
-    bot = telegram.Bot(token2)
-
-    # get the first pending update_id, this is so we can skip over it in case
-    # we get an "Unauthorized" exception.
-    try:
-        update_id = bot.get_updates()[0].update_id
-    except IndexError:
-        update_id = None
-
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
-                        '%(message)s')
-    return bot
-
-
 def send_menus(bot):
     """Run the bot."""
     date = format_date(datetime.today())
@@ -67,7 +50,9 @@ def get_mensa_text(mensa, menus, date):
 
 
 if __name__ == '__main__':
-    bot = initialiaze()
+    bot = telegram.Bot(token2)
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
+                        '%(message)s')
     if len(sys.argv) > 1:
         send_message_to_all(bot, " ".join(sys.argv[1:]))
     else:
