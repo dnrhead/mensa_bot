@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import logging
-from mensa import get_matching_mensa, fetch_all_menus, format_mensa_list, format_date, override_current_menus
-from db_tools import *
+import mensa
+import db_tools
 from telegram.ext import Updater, CommandHandler
 from token2 import token2, token_admin, token_admin2
 from send_messages import get_mensa_text, send_message_to_all
@@ -14,6 +14,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
 
 logger = logging.getLogger(__name__)
 
+
 def start(update, context):
     update.message.reply_text('Hallo! Füge Mensen zu deiner Liste mit dem '
                               '/add Befehl hinzu.\nJeden Tag um etwa 9 Uhr '
@@ -21,15 +22,15 @@ def start(update, context):
 
                               '\nFalls du Hilfe bei der Bedienung des Bots '
                               'brauchst, schicke den /help Befehl.\n')
-                            
+
     print("start command sent", update.message.chat_id)
 
 
 def add(update, context):
     mensa_txt = " ".join(context.args)
-    mensa_to_add = get_matching_mensa(mensa_txt)
+    mensa_to_add = mensa.get_matching_mensa(mensa_txt)
     if mensa_to_add:
-        add_mensa_subscription(update.message.chat_id, mensa_to_add)
+        db_tools.add_mensa_subscription(update.message.chat_id, mensa_to_add)
         update.message.reply_text('%s wurde der Liste hinzugefügt.' %
                                   mensa_to_add)
         print("Mensa added.")
@@ -40,9 +41,10 @@ def add(update, context):
 
 def remove(update, context):
     mensa_txt = " ".join(context.args)
-    mensa_to_remove = get_matching_mensa(mensa_txt)
+    mensa_to_remove = mensa.get_matching_mensa(mensa_txt)
     if mensa_to_remove:
-        remove_mensa_subscription(update.message.chat_id, mensa_to_remove)
+        db_tools.remove_mensa_subscription(update.message.chat_id,
+                                           mensa_to_remove)
         update.message.reply_text('%s wurde aus der Liste entfernt.' %
                                   mensa_to_remove)
     else:
@@ -51,31 +53,31 @@ def remove(update, context):
 
 
 def remove_all(update, context):
-    remove_mensa_subscriptions(update.message.chat_id)
+    db_tools.remove_mensa_subscriptions(update.message.chat_id)
     update.message.reply_text('Alle abonnierten Mensen wurden entfernt.')
 
 
 def show_list(update, context):
     update.message.reply_text('Du hast folgende Mensen abboniert:')
-    mensas_sub = get_mensas_subscription(update.message.chat_id)
-    update.message.reply_text(format_mensa_list(mensas_sub))
+    mensas_sub = db_tools.get_mensas_subscription(update.message.chat_id)
+    update.message.reply_text(mensa.format_mensa_list(mensas_sub))
 
 
 def essen(update, context, delta):
-    date = format_date(datetime.today() + timedelta(delta))
-    mensa_menus = fetch_all_menus(date)
-    subs = get_mensas_subscription(update.message.chat_id)
-    for mensa in subs:
-        menus = mensa_menus[mensa]
+    date = mensa.format_date(datetime.today() + timedelta(delta))
+    mensa_menus = mensa.fetch_all_menus(date)
+    subs = db_tools.get_mensas_subscription(update.message.chat_id)
+    for m in subs:
+        menus = mensa_menus[m]
         if not menus:
             update.message.reply_text("%s kein Essen in der %s" %
-                                      (date, mensa), parse_mode='HTML')
+                                      (date, m), parse_mode='HTML')
             continue
-        text = get_mensa_text(mensa, menus, date)
+        text = get_mensa_text(m, menus, date)
         update.message.reply_text(text, parse_mode='HTML')
 
 
-def wochentag(weekday): 
+def wochentag(weekday):
     def f(update, context):
         delta = weekday - datetime.today().weekday()
         essen(update, context, delta)
@@ -85,13 +87,14 @@ def wochentag(weekday):
 def show_help(update, context):
     with open("help.html") as f:
         content = f.readlines()
-    update.message.reply_text(''.join(content) + format_mensa_list(),
+    update.message.reply_text(''.join(content) + mensa.format_mensa_list(),
                               parse_mode='HTML')
+
 
 def get_info(update, context):
 
     if update.message.chat_id in [token_admin, token_admin2]:
-        users_mensas = get_all_user_and_mensas()
+        users_mensas = db_tools.get_all_user_and_mensas()
         update.message.reply_text("unique sending messages %d" %
                                   len(users_mensas))
 
@@ -107,16 +110,16 @@ def announce(update, context):
 
 
 def feedback(update, context):
-   answer_r = "Feedback: \n"
-   answer = " ".join(context.args)
-   if answer.strip() != "":
-       answer = answer_r + answer
-       answer += "\n chat_id: " + str(update.message.chat_id)
-       update.message.reply_text("Danke, dein Feedback wurde gesendet")
-       context.bot.send_message(chat_id=token_admin, text=answer,
-                                parse_mode='HTML')
-       context.bot.send_message(chat_id=token_admin2, text=answer,
-                                parse_mode='HTML')
+    answer_r = "Feedback: \n"
+    answer = " ".join(context.args)
+    if answer.strip() != "":
+        answer = answer_r + answer
+        answer += "\n chat_id: " + str(update.message.chat_id)
+        update.message.reply_text("Danke, dein Feedback wurde gesendet")
+        context.bot.send_message(chat_id=token_admin, text=answer,
+                                 parse_mode='HTML')
+        context.bot.send_message(chat_id=token_admin2, text=answer,
+                                 parse_mode='HTML')
 
 
 def main():
@@ -138,8 +141,9 @@ def main():
     dp.add_handler(CommandHandler("feedback", feedback))
     dp.add_handler(CommandHandler("get_info", get_info))
     dp.add_handler(CommandHandler("announce", announce))
-    dp.add_handler(CommandHandler("overwrite", lambda u,c: override_current_menus()))
-    
+    dp.add_handler(CommandHandler("overwrite", lambda u, c:
+                                  mensa.override_current_menus()))
+
     dp.add_handler(CommandHandler("morgen", lambda u, c: essen(u, c, 1)))
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
                 "samstag", "sonntag"]
@@ -150,7 +154,7 @@ def main():
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
     # SIGABRT. This should be used most of the time, since start_polling() is
     # non-blocking and will stop the bot gracefully.
-    initialize_database()
+    db_tools.initialize_database()
     print("should be started now")
     updater.idle()
     print("started bot")
