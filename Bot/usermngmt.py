@@ -4,9 +4,10 @@ import logging
 import mensa
 import db_tools
 from telegram.ext import Updater, CommandHandler
-from token2 import token2, token_admin, token_admin2
 from send_messages import get_mensa_text, send_message_to_all
 from datetime import datetime, timedelta
+import sys
+from config import Config
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
@@ -92,8 +93,7 @@ def show_help(update, context):
 
 
 def get_info(update, context):
-
-    if update.message.chat_id in [token_admin, token_admin2]:
+    if update.message.chat_id in config.get_admin_ids():
         users_mensas = db_tools.get_all_user_and_mensas()
         update.message.reply_text("unique sending messages %d" %
                                   len(users_mensas))
@@ -105,7 +105,7 @@ def get_info(update, context):
 
 
 def announce(update, context):
-    if update.message.chat_id in [token_admin, token_admin2]:
+    if update.message.chat_id in config.get_admin_ids():
         send_message_to_all(context.bot, " ".join(context.args))
 
 
@@ -116,10 +116,8 @@ def feedback(update, context):
         answer = answer_r + answer
         answer += "\n chat_id: " + str(update.message.chat_id)
         update.message.reply_text("Danke, dein Feedback wurde gesendet")
-        context.bot.send_message(chat_id=token_admin, text=answer,
-                                 parse_mode='HTML')
-        context.bot.send_message(chat_id=token_admin2, text=answer,
-                                 parse_mode='HTML')
+        for i in config.get_admin_ids():
+            context.bot.send_message(chat_id=i, text=answer, parse_mode='HTML')
 
 
 def main():
@@ -127,7 +125,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater(token2, use_context=True)
+    updater = Updater(config.get_token(), use_context=True)
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
     # on different commands - answer in Telegram
@@ -161,5 +159,10 @@ def main():
 
 
 if __name__ == '__main__':
-    print("try to start bot")
-    main()
+    if len(sys.argv) != 2:
+        print(f"Usage: python3 {sys.argv[0]} <config.json>")
+    else:
+        global config
+        config = Config(sys.argv[1])
+        print("try to start bot")
+        main()

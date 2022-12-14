@@ -7,8 +7,7 @@ from mensa import fetch_all_menus, format_date
 from time import sleep
 import sys
 from datetime import datetime
-# Define your own token here
-from token2 import token2
+from config import Config
 
 
 def send_menus(bot):
@@ -50,10 +49,14 @@ def get_mensa_text(mensa, menus, date):
 
 
 if __name__ == '__main__':
-    bot = telegram.Bot(token2)
+    if len(sys.argv) == 1:
+        print(f"Usage: python3 {__file__} <config.json> [message to all]")
+        return
+    config = Config(sys.argv[1])
+    bot = telegram.Bot(config.get_token())
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
                         '%(message)s')
-    if len(sys.argv) > 1:
-        send_message_to_all(bot, " ".join(sys.argv[1:]))
+    if len(sys.argv) > 2:
+        send_message_to_all(bot, " ".join(sys.argv[2:]))
     else:
         send_menus(bot)
