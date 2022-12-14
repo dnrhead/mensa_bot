@@ -142,7 +142,7 @@ def main():
     dp.add_handler(CommandHandler("get_info", get_info))
     dp.add_handler(CommandHandler("announce", announce))
     dp.add_handler(CommandHandler("overwrite", lambda u, c:
-                                  mensa.override_current_menus()))
+                                  mensa.overwrite_current_menus()))
 
     dp.add_handler(CommandHandler("morgen", lambda u, c: essen(u, c, 1)))
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",

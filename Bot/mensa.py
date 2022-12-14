@@ -172,7 +172,7 @@ def fetch_all_menus(date):
     return result
 
 
-def override_current_menus():
+def overwrite_current_menus():
     for m in db_tools.get_all_mensa_subscriptions():
         try:
             data = retrieve_menus(m)
