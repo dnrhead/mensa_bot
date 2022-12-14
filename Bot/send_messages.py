@@ -51,7 +51,7 @@ def get_mensa_text(mensa, menus, date):
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         print(f"Usage: python3 {__file__} <config.json> [message to all]")
-        return
+        sys.exit()
     config = Config(sys.argv[1])
     bot = telegram.Bot(config.get_token())
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
