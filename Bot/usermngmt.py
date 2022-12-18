@@ -2,7 +2,6 @@
 
 import logging
 import mensa
-import db_tools
 from telegram.ext import Updater, CommandHandler
 from send_messages import get_mensa_text, send_message_to_all
 from datetime import datetime, timedelta
@@ -31,7 +30,8 @@ def add(update, context):
     mensa_txt = " ".join(context.args)
     mensa_to_add = mensa.get_matching_mensa(mensa_txt)
     if mensa_to_add:
-        db_tools.add_mensa_subscription(update.message.chat_id, mensa_to_add)
+        db = config.get_database()
+        db.add_mensa_subscription(update.message.chat_id, mensa_to_add)
         update.message.reply_text('%s wurde der Liste hinzugefügt.' %
                                   mensa_to_add)
         print("Mensa added.")
@@ -44,8 +44,8 @@ def remove(update, context):
     mensa_txt = " ".join(context.args)
     mensa_to_remove = mensa.get_matching_mensa(mensa_txt)
     if mensa_to_remove:
-        db_tools.remove_mensa_subscription(update.message.chat_id,
-                                           mensa_to_remove)
+        config.get_database().remove_mensa_subscription(update.message.chat_id,
+                                                        mensa_to_remove)
         update.message.reply_text('%s wurde aus der Liste entfernt.' %
                                   mensa_to_remove)
     else:
@@ -54,20 +54,22 @@ def remove(update, context):
 
 
 def remove_all(update, context):
-    db_tools.remove_mensa_subscriptions(update.message.chat_id)
+    config.get_database().remove_mensa_subscriptions(update.message.chat_id)
     update.message.reply_text('Alle abonnierten Mensen wurden entfernt.')
 
 
 def show_list(update, context):
     update.message.reply_text('Du hast folgende Mensen abboniert:')
-    mensas_sub = db_tools.get_mensas_subscription(update.message.chat_id)
+    db = config.get_database()
+    mensas_sub = db.get_mensas_subscription(update.message.chat_id)
     update.message.reply_text(mensa.format_mensa_list(mensas_sub))
 
 
 def essen(update, context, delta):
     date = mensa.format_date(datetime.today() + timedelta(delta))
-    mensa_menus = mensa.fetch_all_menus(date)
-    subs = db_tools.get_mensas_subscription(update.message.chat_id)
+    mensa_menus = mensa.fetch_all_menus(config, date)
+    db = config.get_database()
+    subs = db.get_mensas_subscription(update.message.chat_id)
     for m in subs:
         menus = mensa_menus[m]
         if not menus:
@@ -94,7 +96,7 @@ def show_help(update, context):
 
 def get_info(update, context):
     if update.message.chat_id in config.get_admin_ids():
-        users_mensas = db_tools.get_all_user_and_mensas()
+        users_mensas = config.get_database().get_all_user_and_mensas()
         update.message.reply_text("unique sending messages %d" %
                                   len(users_mensas))
 
@@ -140,7 +142,7 @@ def main():
     dp.add_handler(CommandHandler("get_info", get_info))
     dp.add_handler(CommandHandler("announce", announce))
     dp.add_handler(CommandHandler("overwrite", lambda u, c:
-                                  mensa.overwrite_current_menus()))
+                                  mensa.overwrite_current_menus(config)))
 
     dp.add_handler(CommandHandler("morgen", lambda u, c: essen(u, c, 1)))
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
@@ -152,7 +154,6 @@ def main():
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
     # SIGABRT. This should be used most of the time, since start_polling() is
     # non-blocking and will stop the bot gracefully.
-    db_tools.initialize_database()
     print("should be started now")
     updater.idle()
     print("started bot")

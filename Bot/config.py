@@ -1,4 +1,5 @@
 import json
+from database import Database
 
 
 class Config:
@@ -8,7 +9,7 @@ class Config:
         self.__admin_ids = d["admin_ids"]
         self.__token = d["token"]
         self.__mensas = sorted(d["mensas"])
-        self.__db_name = d["db_name"]
+        self.__database = Database(d["db_name"])
 
     def get_admin_ids(self):
         return self.__admin_ids
@@ -19,5 +20,5 @@ class Config:
     def get_mensas(self):
         return self.__mensas
 
-    def get_db_name(self):
-        return self.__db_name
+    def get_database(self):
+        return self.__database

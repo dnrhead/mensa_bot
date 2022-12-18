@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import logging
 import telegram
-from db_tools import get_all_user_and_mensas, get_users
 from mensa import fetch_all_menus, format_date
 from time import sleep
 import sys
@@ -10,11 +9,11 @@ from datetime import datetime
 from config import Config
 
 
-def send_menus(bot):
+def send_menus(bot, config):
     """Run the bot."""
     date = format_date(datetime.today())
-    mensa_menus = fetch_all_menus(date)
-    users_mensas = get_all_user_and_mensas()
+    mensa_menus = fetch_all_menus(config, date)
+    users_mensas = config.get_database().get_all_user_and_mensas()
     print("Sending menus in %d messages" % (len(users_mensas)))
     for cid, mensa in users_mensas:
         menus = mensa_menus[mensa]
@@ -23,8 +22,7 @@ def send_menus(bot):
         send_message(bot, cid, get_mensa_text(mensa, menus, date))
 
 
-def send_message_to_all(bot, msg):
-    users = get_users()
+def send_message_to_all(bot, users, msg):
     print("Sending message to all %d users" % len(users))
     for cid in users:
         send_message(bot, cid, msg)
@@ -57,6 +55,7 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
                         '%(message)s')
     if len(sys.argv) > 2:
-        send_message_to_all(bot, " ".join(sys.argv[2:]))
+        send_message_to_all(bot, config.get_database().get_users(),
+                            " ".join(sys.argv[2:]))
     else:
-        send_menus(bot)
+        send_menus(bot, config)

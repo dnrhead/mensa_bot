@@ -2,7 +2,6 @@ from urllib.request import urlopen
 import re
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-import db_tools
 
 mensas_freiburg = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
                    'Mensa Littenweiler', 'Mensa Flugplatz',
@@ -155,14 +154,15 @@ def get_next_weekday(day):
     return format_date(today + timedelta(days=diff))
 
 
-def fetch_all_menus(date):
+def fetch_all_menus(config, date):
+    db = config.get_database()
     result = {}
-    for m in db_tools.get_all_mensa_subscriptions():
-        menus = db_tools.get_menus(m, date)
+    for m in db.get_all_mensa_subscriptions():
+        menus = db.get_menus(m, date)
         if menus == []:
             try:
                 data = retrieve_menus(m)
-                db_tools.add_menus(m, data)
+                db.add_menus(m, data)
                 if date in data:
                     menus = data[date]
             except:
@@ -172,15 +172,16 @@ def fetch_all_menus(date):
     return result
 
 
-def overwrite_current_menus():
-    for m in db_tools.get_all_mensa_subscriptions():
+def overwrite_current_menus(config):
+    db = config.get_database()
+    for m in db.get_all_mensa_subscriptions():
         try:
             data = retrieve_menus(m)
         except:
             continue
         for d in data:
-            db_tools.remove_menus(m, d)
-        db_tools.add_menus(m, data)
+            db.remove_menus(m, d)
+        db.add_menus(m, data)
 
 
 def edit_distance(s1, s2):
