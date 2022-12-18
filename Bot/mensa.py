@@ -94,8 +94,5 @@ def get_variants(mensa):
     replacements = {"mensa": "", "ae": "ä", "oe": "ö", "ue": "ü", "ss": "ß"}
     variants = {mensa.lower()}
     for r in replacements.items():
-        newVariants = set()
-        for v in variants:
-            newVariants.add(v.replace(*r).strip())
-        variants |= newVariants
+        variants.update(v.replace(*r).strip() for v in list(variants))
     return variants
