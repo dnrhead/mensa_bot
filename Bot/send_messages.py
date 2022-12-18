@@ -7,11 +7,13 @@ from time import sleep
 import sys
 from datetime import datetime
 from config import Config
+from database import format_date
 
 
 def send_menus(bot, config):
     """Run the bot."""
-    mensa_menus = fetch_all_menus(config, datetime.today())
+    date = datetime.today()
+    mensa_menus = fetch_all_menus(config, date)
     users_mensas = config.get_database().get_all_user_and_mensas()
     print("Sending menus in %d messages" % (len(users_mensas)))
     for cid, mensa in users_mensas:
@@ -35,8 +37,9 @@ def send_message(bot, chat_id, message):
     sleep(0.05)  # avoiding flood limits
 
 
+# TODO: This method should be moved to a utils class (along with format_date?)
 def get_mensa_text(mensa, menus, date):
-    res = "<u><b>%s (%s):</b></u>" % (mensa, date)
+    res = "<u><b>%s (%s):</b></u>" % (mensa, format_date(date))
     for m in menus:
         num = m.find("&#x1F")
         symbols = "" if num == -1 else " " + m[num:]
