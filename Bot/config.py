@@ -8,7 +8,7 @@ class Config:
             d = json.load(f)
         self.__admin_ids = d["admin_ids"]
         self.__token = d["token"]
-        self.__mensas = sorted(d["mensas"])
+        self.__mensas = d["mensas"]
         self.__database = Database(d["db_name"])
 
     def get_admin_ids(self):
