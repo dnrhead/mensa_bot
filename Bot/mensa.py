@@ -13,6 +13,7 @@ def retrieve_menus(mensa):
 def fetch_all_menus(config, date):
     db = config.get_database()
     result = {}
+    # TODO: Only get menus for mensas in the config
     for m in db.get_all_mensa_subscriptions():
         menus = db.get_menus(m, date)
         if menus == []:
