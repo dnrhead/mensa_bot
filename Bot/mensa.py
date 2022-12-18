@@ -69,11 +69,11 @@ def format_mensa_list(mensa_list=None):
 
 
 def get_matching_mensa(mensa):
+    # TODO: We want to use the mensas from the config instead
+    mensas = mensa_swfr.SUPPORTED_MENSAS
     n = mensa.strip("() ")
     if n.isdigit():
         index = int(n) - 1
-        # TODO: We want to use the mensas from the config instead
-        mensas = mensa_swfr.SUPPORTED_MENSAS
         if index < len(mensas):
             return mensas[index]
     min_ed = 3
