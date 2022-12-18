@@ -51,7 +51,8 @@ class Database:
     def get_menus(self, mensa, date):
         return [i[0] for i in
                 self.__execute_sql("SELECT DISTINCT menu FROM menus WHERE "
-                                   "mensa=%r AND date=%r" % (mensa, date))]
+                                   "mensa=%r AND date=%r"
+                                   % (mensa, format_date(date)))]
 
     def get_all_menus(self, mensa):
         return [i[0] for i in
@@ -63,12 +64,16 @@ class Database:
             return
         values = []
         for d in data:
+            fd = format_date(d)
             if data[d]:
-                values.extend("(%r, %r, %r)" % (mensa, d, f) for f in data[d])
+                values.extend("(%r, %r, %r)" % (mensa, fd, f) for f in data[d])
             else:
-                values.append("(%r, %r, NULL)" % (mensa, d))
+                values.append("(%r, %r, NULL)" % (mensa, fd))
         self.__execute_sql("INSERT INTO menus VALUES %s;" % ", ".join(values))
-
+    
     def remove_menus(self, mensa, date):
         self.__execute_sql("DELETE FROM menus WHERE mensa=%r AND date=%r" %
-                           (mensa, date))
+                           (mensa, format_date(date)))
+
+def format_date(date):
+    return "%02d.%02d.%d" % (date.day, date.month, date.year)

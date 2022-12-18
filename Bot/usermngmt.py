@@ -66,7 +66,7 @@ def show_list(update, context):
 
 
 def essen(update, context, delta):
-    date = mensa.format_date(datetime.today() + timedelta(delta))
+    date = datetime.today() + timedelta(delta)
     mensa_menus = mensa.fetch_all_menus(config, date)
     db = config.get_database()
     subs = db.get_mensas_subscription(update.message.chat_id)

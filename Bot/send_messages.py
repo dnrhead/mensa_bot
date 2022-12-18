@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import telegram
-from mensa import fetch_all_menus, format_date
+from mensa import fetch_all_menus
 from time import sleep
 import sys
 from datetime import datetime
@@ -11,8 +11,7 @@ from config import Config
 
 def send_menus(bot, config):
     """Run the bot."""
-    date = format_date(datetime.today())
-    mensa_menus = fetch_all_menus(config, date)
+    mensa_menus = fetch_all_menus(config, datetime.today())
     users_mensas = config.get_database().get_all_user_and_mensas()
     print("Sending menus in %d messages" % (len(users_mensas)))
     for cid, mensa in users_mensas:
