@@ -21,8 +21,9 @@ def fetch_all_menus(config, date):
                 db.add_menus(m, data)
                 if date in data:
                     menus = data[date]
-            except:
+            except Exception as e:
                 # An error occured during retrieving the menus, just use []
+                print(f"Retrieving menus for {m} raised the exception '{e}'.")
                 menus = []
         result[m] = list(filter(bool, menus))
     return result
@@ -33,7 +34,9 @@ def overwrite_current_menus(config):
     for m in db.get_all_mensa_subscriptions():
         try:
             data = retrieve_menus(m)
-        except:
+        except Exception as e:
+            # An error occured during retrieving the menus, just continue
+            print(f"Retrieving menus for {m} raised the exception '{e}'.")
             continue
         for d in data:
             db.remove_menus(m, d)
