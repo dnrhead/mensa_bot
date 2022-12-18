@@ -38,7 +38,7 @@ def retrieve_menus(mensa):
         date = get_date_with_year(int(day), int(month))
         result[date] = menus
     # Sundays do not occur on the site, therefore add [] manually
-    result[get_next_weekday(6)] = []
+    result[get_next_sunday(min(result))] = []
     return result
 
 
@@ -96,7 +96,5 @@ def get_date_with_year(day, month):
     return datetime(year, month, day)
 
 
-def get_next_weekday(day):
-    today = datetime.today()
-    diff = (day - today.weekday()) % 7
-    return today + timedelta(days=diff)
+def get_next_sunday(day):
+    return day + timedelta(days=6-day.weekday())
