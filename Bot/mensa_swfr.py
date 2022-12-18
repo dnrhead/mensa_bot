@@ -26,9 +26,12 @@ def retrieve_menus(mensa):
         if not date_match:
             continue
         menus = []
-        for c in d.findChildren("div", {"class": "col-span-1 bg-lighter-cyan py-20px px-15px flex flex-col"}):
+        attr = {"class":
+                "col-span-1 bg-lighter-cyan py-20px px-15px flex flex-col"}
+        for c in d.findChildren("div", attr):
             title = c.find("h5").getText()
-            desc = c.find("small", {"class": "extra-text mb-15px"}).getText(", ").replace(":,", ":")
+            desc_match = c.find("small", {"class": "extra-text mb-15px"})
+            desc = desc_match.getText(", ").replace(":,", ":")
             menus.append(format_menu(title, get_flag(c), desc,
                                      get_ingredients(c)))
         day, month = date_match.groups()

@@ -70,10 +70,11 @@ class Database:
             else:
                 values.append("(%r, %r, NULL)" % (mensa, fd))
         self.__execute_sql("INSERT INTO menus VALUES %s;" % ", ".join(values))
-    
+
     def remove_menus(self, mensa, date):
         self.__execute_sql("DELETE FROM menus WHERE mensa=%r AND date=%r" %
                            (mensa, format_date(date)))
+
 
 def format_date(date):
     return "%02d.%02d.%d" % (date.day, date.month, date.year)
