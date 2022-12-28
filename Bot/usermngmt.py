@@ -3,10 +3,11 @@
 import logging
 import mensa
 from telegram.ext import Updater, CommandHandler
-from send_messages import get_mensa_text, send_message_to_all
+from send_messages import send_message_to_all
 from datetime import datetime, timedelta
 import sys
 from config import Config
+from database import get_mensa_text
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '

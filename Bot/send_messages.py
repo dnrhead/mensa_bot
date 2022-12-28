@@ -7,7 +7,7 @@ from time import sleep
 import sys
 from datetime import datetime
 from config import Config
-from database import format_date
+from database import get_mensa_text
 
 
 def send_menus(bot, config):
@@ -35,17 +35,6 @@ def send_message(bot, chat_id, message):
     except Exception as ex:
         print("Could not send message to", chat_id, str(ex))
     sleep(0.05)  # avoiding flood limits
-
-
-# TODO: This method should be moved to a utils class (along with format_date?)
-def get_mensa_text(mensa, menus, date):
-    res = "<u><b>%s (%s):</b></u>" % (mensa, format_date(date))
-    for m in menus:
-        num = m.find("&#x1F")
-        symbols = "" if num == -1 else " " + m[num:]
-        tmp = m if num == -1 else m[:num-1]
-        res += "\n\n<b>" + tmp.replace(": ", symbols + ":</b>\n", 1)
-    return res
 
 
 if __name__ == '__main__':
