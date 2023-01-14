@@ -7,7 +7,7 @@ from send_messages import send_message_to_all
 from datetime import datetime, timedelta
 import sys
 from config import Config
-from database import get_mensa_text
+from utils import format_menus
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
@@ -77,7 +77,7 @@ def essen(update, context, delta):
             update.message.reply_text("%s kein Essen in der %s" %
                                       (date, m), parse_mode='HTML')
             continue
-        text = get_mensa_text(m, menus, date)
+        text = format_menus(m, menus, date)
         update.message.reply_text(text, parse_mode='HTML')
 
 

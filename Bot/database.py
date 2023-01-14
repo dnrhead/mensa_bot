@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from utils import format_date
 
 
 class Database:
@@ -74,18 +75,3 @@ class Database:
     def remove_menus(self, mensa, date):
         self.__execute_sql("DELETE FROM menus WHERE mensa=%r AND date=%r" %
                            (mensa, format_date(date)))
-
-
-# TODO: Is this the correct place for those methods?
-def format_date(date):
-    return "%02d.%02d.%d" % (date.day, date.month, date.year)
-
-
-def get_mensa_text(mensa, menus, date):
-    res = "<u><b>%s (%s):</b></u>" % (mensa, format_date(date))
-    for m in menus:
-        num = m.find("&#x1F")
-        symbols = "" if num == -1 else " " + m[num:]
-        tmp = m if num == -1 else m[:num-1]
-        res += "\n\n<b>" + tmp.replace(": ", symbols + ":</b>\n", 1)
-    return res

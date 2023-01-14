@@ -7,7 +7,7 @@ from time import sleep
 import sys
 from datetime import datetime
 from config import Config
-from database import get_mensa_text
+from utils import format_menus
 
 
 def send_menus(bot, config):
@@ -20,7 +20,7 @@ def send_menus(bot, config):
         menus = mensa_menus[mensa]
         if not menus:
             continue
-        send_message(bot, cid, get_mensa_text(mensa, menus, date))
+        send_message(bot, cid, format_menus(mensa, menus, date))
 
 
 def send_message_to_all(bot, users, msg):
