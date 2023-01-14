@@ -123,6 +123,11 @@ def feedback(update, context):
             context.bot.send_message(chat_id=i, text=answer, parse_mode='HTML')
 
 
+def overwrite_menus(update, context):
+    if update.message.chat_id in config.get_admin_ids():
+        mensa.overwrite_current_menus(config)
+
+
 def main():
     """Run bot."""
     # Create the Updater and pass it your bot's token.
@@ -142,8 +147,7 @@ def main():
     dp.add_handler(CommandHandler("feedback", feedback))
     dp.add_handler(CommandHandler("get_info", get_info))
     dp.add_handler(CommandHandler("announce", announce))
-    dp.add_handler(CommandHandler("overwrite", lambda u, c:
-                                  mensa.overwrite_current_menus(config)))
+    dp.add_handler(CommandHandler("overwrite", overwrite_menus))
 
     dp.add_handler(CommandHandler("morgen", lambda u, c: essen(u, c, 1)))
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
