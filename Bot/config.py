@@ -4,14 +4,15 @@ from database import Database
 
 
 class Config:
-    def __init__(self, config_path):
-        with open(config_path) as f:
+    def __init__(self, path):
+        with open(path) as f:
             d = json.load(f)
         self.__admin_ids = d["admin_ids"]
         self.__token = d["token"]
         self.__mensas = d["mensas"]
-        dirname = os.path.dirname(config_path)
-        db_path = os.path.abspath(os.path.join(dirname, d["database"]))
+        # Use the absolute path for the database based on the config
+        config_dir = os.path.dirname(path)
+        db_path = os.path.abspath(os.path.join(config_dir, d["database"]))
         self.__database = Database(db_path)
 
     def get_admin_ids(self):
