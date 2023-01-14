@@ -1,11 +1,10 @@
 import sqlite3
-import os
 from utils import format_date
 
 
 class Database:
-    def __init__(self, db_name):
-        self.__db_name = db_name
+    def __init__(self, db_path):
+        self.__db_path = db_path
         self.__execute_sql("CREATE TABLE IF NOT EXISTS users "
                            "(user VARCHAR(30), mensa VARCHAR(30));")
         self.__execute_sql("CREATE TABLE IF NOT EXISTS menus "
@@ -13,9 +12,7 @@ class Database:
                            "menu VARCHAR(200));")
 
     def __execute_sql(self, cmd):
-        dirname = os.path.dirname(os.path.abspath(__file__))
-        dbpath = os.path.join(dirname, self.__db_name)
-        connection = sqlite3.connect(dbpath)
+        connection = sqlite3.connect(self.__db_path)
         cursor = connection.cursor()
         cursor.execute(cmd)
         result = cursor.fetchall()
