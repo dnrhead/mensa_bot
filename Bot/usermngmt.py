@@ -143,17 +143,21 @@ def main():
     dp.add_handler(CommandHandler("remove", remove))
     dp.add_handler(CommandHandler("removeall", remove_all))
     dp.add_handler(CommandHandler("help", show_help))
-    dp.add_handler(CommandHandler("essen", lambda u, c: essen(u, c, 0)))
     dp.add_handler(CommandHandler("feedback", feedback))
-    dp.add_handler(CommandHandler("get_info", get_info))
-    dp.add_handler(CommandHandler("announce", announce))
-    dp.add_handler(CommandHandler("overwrite", overwrite_menus))
 
+    dp.add_handler(CommandHandler("essen", lambda u, c: essen(u, c, 0)))
+    dp.add_handler(CommandHandler("heute", lambda u, c: essen(u, c, 0)))
     dp.add_handler(CommandHandler("morgen", lambda u, c: essen(u, c, 1)))
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
                 "samstag", "sonntag"]
     for i, w in enumerate(weekdays):
         dp.add_handler(CommandHandler(w, wochentag(i)))
+
+    # Admin commands
+    dp.add_handler(CommandHandler("get_info", get_info))
+    dp.add_handler(CommandHandler("announce", announce))
+    dp.add_handler(CommandHandler("overwrite", overwrite_menus))
+    
     # Start the Bot
     updater.start_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
