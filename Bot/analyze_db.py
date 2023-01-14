@@ -22,6 +22,6 @@ def get_food_counts(database, mensa):
     return sorted(d.items(), key=lambda x: -x[1])
 
 
-def get_food_type_counts(mensa):
-    return [(FOOD_TYPES[i], c) for i, c in get_food_counts(mensa)
+def get_food_type_counts(database, mensa):
+    return [(FOOD_TYPES[i], c) for i, c in get_food_counts(database, mensa)
             if i in FOOD_TYPES]
