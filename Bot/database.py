@@ -58,8 +58,6 @@ class Database:
                                    "AND menu IS NOT NULL" % mensa)]
 
     def add_menus(self, mensa, data):
-        if not data:
-            return
         values = []
         for d in data:
             fd = format_date(d)
@@ -67,7 +65,9 @@ class Database:
                 values.extend("(%r, %r, %r)" % (mensa, fd, f) for f in data[d])
             else:
                 values.append("(%r, %r, NULL)" % (mensa, fd))
-        self.__execute_sql("INSERT INTO menus VALUES %s;" % ", ".join(values))
+        if values:
+            self.__execute_sql("INSERT INTO menus VALUES %s;" %
+                               ", ".join(values))
 
     def remove_menus(self, mensa, date):
         self.__execute_sql("DELETE FROM menus WHERE mensa=%r AND date=%r" %
