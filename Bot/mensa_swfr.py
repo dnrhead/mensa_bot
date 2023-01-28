@@ -14,6 +14,10 @@ MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
           "August", "September", "Oktober", "November", "Dezember"]
 
 
+def is_supported(mensa):
+    return mensa in SUPPORTED_MENSAS
+
+
 def retrieve_menus(mensa):
     with urlopen(get_swfr_url(mensa)) as url:
         bs = BeautifulSoup(url, "lxml")

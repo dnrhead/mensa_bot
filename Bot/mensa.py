@@ -1,12 +1,11 @@
 from utils import edit_distance
-# TODO: We want to import also other modules (automatically?)
+# Additional mensas need to be imported and added here
 import mensa_swfr
+MENSA_MODULES = [mensa_swfr]
 
 
 def retrieve_menus(mensa):
-    # TODO: We want to use other modules
-    modules = [mensa_swfr]
-    module_candidates = [m for m in modules if mensa in m.SUPPORTED_MENSAS]
+    module_candidates = [m for m in MENSA_MODULES if m.is_supported(mensa)]
     assert len(module_candidates) == 1
     return module_candidates[0].retrieve_menus(mensa)
 
