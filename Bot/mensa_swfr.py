@@ -2,6 +2,7 @@ from urllib.request import urlopen
 import re
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+import ssl
 
 MENSAS_FREIBURG = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
                    'Mensa Littenweiler', 'Mensa Flugplatz',
@@ -19,7 +20,8 @@ def is_supported(mensa):
 
 
 def retrieve_menus(mensa):
-    with urlopen(get_swfr_url(mensa)) as url:
+    # TODO: Workaround
+    with urlopen(get_swfr_url(mensa), context=ssl._create_unverified_context()) as url:
         bs = BeautifulSoup(url, "lxml")
     result = {}
     for d in bs.findAll("div", {"class": "menu-tagesplan"}):
