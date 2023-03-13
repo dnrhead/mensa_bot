@@ -2,3 +2,4 @@ __pycache__/
 *.db
 *.json
 token2.py
+*.log
