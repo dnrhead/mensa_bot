@@ -44,29 +44,23 @@ def overwrite_current_menus(config):
         db.add_menus(m, data)
 
 
-def format_mensa_list(mensa_list=None):
-    # TODO: We want to use the mensas from the config instead
-    mensas = mensa_swfr.SUPPORTED_MENSAS
-    if mensa_list is None:
-        mensa_indices = enumerate(mensas, 1)
-    else:
-        mensa_indices = sorted((mensas.index(m) + 1, m) for m in mensa_list)
+def format_mensa_list(mensa_list, order):
+    mensa_indices = sorted((order.index(m) + 1, m) for m in mensa_list
+                           if m in order)
     return "\n".join("(%d)\t%s" % i for i in mensa_indices)
 
 
-def get_matching_mensa(mensa):
-    # TODO: We want to use the mensas from the config instead
-    mensas = mensa_swfr.SUPPORTED_MENSAS
-    n = mensa.strip("() ")
+def get_matching_mensa(match, list):
+    n = match.strip("() ")
     if n.isdigit():
         index = int(n) - 1
-        if index < len(mensas):
-            return mensas[index]
+        if index < len(list):
+            return list[index]
     min_ed = 3
     res = None
-    for m in mensas:
+    for m in list:
         for m2 in get_variants(m):
-            ed = edit_distance(m2, mensa.lower())
+            ed = edit_distance(m2, match.lower())
             if ed == 0:
                 return m
             if ed < min_ed:

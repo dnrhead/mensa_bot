@@ -29,7 +29,7 @@ def start(update, context):
 
 def add(update, context):
     mensa_txt = " ".join(context.args)
-    mensa_to_add = mensa.get_matching_mensa(mensa_txt)
+    mensa_to_add = mensa.get_matching_mensa(mensa_txt, config.get_mensas())
     if mensa_to_add:
         db = config.get_database()
         db.add_mensa_subscription(update.message.chat_id, mensa_to_add)
@@ -63,7 +63,8 @@ def show_list(update, context):
     update.message.reply_text('Du hast folgende Mensen abboniert:')
     db = config.get_database()
     mensas_sub = db.get_mensas_subscription(update.message.chat_id)
-    update.message.reply_text(mensa.format_mensa_list(mensas_sub))
+    update.message.reply_text(mensa.format_mensa_list(mensas_sub,
+                                                      config.get_mensas()))
 
 
 def essen(update, context, delta):
@@ -92,8 +93,8 @@ def wochentag(weekday):
 def show_help(update, context):
     with open("help.html") as f:
         content = f.readlines()
-    update.message.reply_text(''.join(content) + mensa.format_mensa_list(),
-                              parse_mode='HTML')
+    update.message.reply_text(''.join(content) + mensa.format_mensa_list(
+        config.get_mensas(), config.get_mensas()), parse_mode='HTML')
 
 
 def get_info(update, context):
