@@ -35,10 +35,11 @@ def retrieve_menus(mensa):
         attr = {"class":
                 "col-span-1 bg-lighter-cyan py-20px px-15px flex flex-col"}
         for c in d.findChildren("div", attr):
-            title = c.find("h5").getText()
+            title, flag_match = c.find("h5")
+            flag = flag_match.getText().strip()
             desc_match = c.find("small", {"class": "extra-text mb-15px"})
             desc = desc_match.getText(", ").replace(":,", ":")
-            menus.append(format_menu(title, get_flag(c), desc,
+            menus.append(format_menu(title.strip(), flag, desc,
                                      get_ingredients(c)))
         day, month = date_match.groups()
         date = get_date_with_year(int(day), int(month))
@@ -78,13 +79,6 @@ def get_swfr_url(mensa):
     mensa_url = mensa.lower().replace(" ", "-")
     suffix = f"freiburg/{mensa_url}" if mensa in MENSAS_FREIBURG else mensa_url
     return "https://www.swfr.de/essen/mensen-cafes-speiseplaene/" + suffix
-
-
-def get_flag(bs_element):
-    match = bs_element.find("img", {"class": "w-30px"})
-    if match:
-        return re.search(r'/([^/]*?)\.svg',
-                         match.get_attribute_list("src")[0]).group(1)
 
 
 def get_ingredients(bs_element):
