@@ -43,7 +43,7 @@ def add(update, context):
 
 def remove(update, context):
     mensa_txt = " ".join(context.args)
-    mensa_to_remove = mensa.get_matching_mensa(mensa_txt)
+    mensa_to_remove = mensa.get_matching_mensa(mensa_txt, config.get_mensas())
     if mensa_to_remove:
         config.get_database().remove_mensa_subscription(update.message.chat_id,
                                                         mensa_to_remove)
