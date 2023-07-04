@@ -108,10 +108,10 @@ async def get_info(update, context):
         await update.message.reply_text("unique mensas %d" %
                                   len(set([i[1] for i in users_mensas])))
 
-# TODO: Make async
-def announce(update, context):
+
+async def announce(update, context):
     if update.message.chat_id in config.get_admin_ids():
-        send_message_to_all(context.bot, " ".join(context.args))
+        await send_message_to_all(context.bot, " ".join(context.args))
 
 
 async def feedback(update, context):
