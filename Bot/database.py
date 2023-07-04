@@ -43,7 +43,7 @@ class Database:
         return self.__execute_sql("SELECT DISTINCT * FROM users")
 
     def get_users(self):
-        return [i[0] for i in self.__execute_sql("SELECT DISTINCT user FROM"
+        return [i[0] for i in self.__execute_sql("SELECT DISTINCT user FROM "
                                                  "users")]
 
     def get_menus(self, mensa, date):
