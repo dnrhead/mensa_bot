@@ -9,7 +9,8 @@ class Database:
                            "(user VARCHAR(30), mensa VARCHAR(30));")
         self.__execute_sql("CREATE TABLE IF NOT EXISTS menus "
                            "(mensa VARCHAR(30), date VARCHAR(30), "
-                           "menu VARCHAR(200));")
+                           "title VARCHAR(50), description VARCHAR(200),"
+                           "ingredients VARCHAR(50));")
 
     def __execute_sql(self, cmd):
         connection = sqlite3.connect(self.__db_path)
@@ -47,28 +48,25 @@ class Database:
                                                  "users")]
 
     def get_menus(self, mensa, date):
-        return [i[0] for i in
-                self.__execute_sql("SELECT DISTINCT menu FROM menus WHERE "
-                                   "mensa=%r AND date=%r"
-                                   % (mensa, format_date(date)))]
-
-    def get_all_menus(self, mensa):
-        return [i[0] for i in
-                self.__execute_sql("SELECT menu FROM menus WHERE mensa=%r "
-                                   "AND menu IS NOT NULL" % mensa)]
+        return self.__execute_sql("SELECT DISTINCT title, description, "
+                                  "ingredients FROM menus WHERE "
+                                  "mensa=%r AND date=%r"
+                                  % (mensa, format_date(date)))
 
     def add_menus(self, mensa, data):
         values = []
-        for d in data:
-            fd = format_date(d)
-            if data[d]:
-                values.extend("(%r, %r, %r)" % (mensa, fd, f) for f in data[d])
+        for date, menus in data.items():
+            fd = format_date(date)
+            if menus:
+                values.extend("(%r, %r, %r, %r, %r)" % (mensa, fd, t, d, i)
+                              for t, d, i in menus)
             else:
-                values.append("(%r, %r, NULL)" % (mensa, fd))
+                values.append("(%r, %r, NULL, NULL, NULL)" % (mensa, fd))
         if values:
             self.__execute_sql("INSERT INTO menus VALUES %s;" %
                                ", ".join(values))
 
+    
     def remove_menus(self, mensa, date):
         self.__execute_sql("DELETE FROM menus WHERE mensa=%r AND date=%r" %
                            (mensa, format_date(date)))

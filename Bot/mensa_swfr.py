@@ -39,8 +39,8 @@ def retrieve_menus(mensa):
             flag = flag_match.getText().strip()
             desc_match = c.find("small", {"class": "extra-text mb-15px"})
             desc = desc_match.getText(", ").replace(":,", ":")
-            menus.append(format_menu(title.strip(), flag, desc,
-                                     get_ingredients(c)))
+            menus.append((format_title(title.strip(), flag), desc,
+                          " ".join(get_ingredients(c, desc, flag))))
         day, month = date_match.groups()
         date = get_date_with_year(int(day), int(month))
         result[date] = menus
@@ -49,30 +49,13 @@ def retrieve_menus(mensa):
     return result
 
 
-def format_menu(title, flag, desc, ingredients):
-    def matches(*args):
-        return any(x in desc.lower() for x in args)
-    res = title
+
+def format_title(title, flag):
     if flag in ["vegan", "vegetarisch"]:
-        res += f" ({flag}): {desc} &#x1F331"
-    elif flag == "vegan-aufwunsch":
-        res += f" (auf Wunsch vegan): {desc} &#x1F331"
-    else:
-        res += f": {desc}"
-        if matches(" veg"):
-            res += " &#x1F331"
-    if matches("hähn", "huhn", "hühn", "pute", "flügel"):
-        res += " &#x1F414"
-    if matches("lamm"):
-        res += " &#x1F411"
-    if "sch" in ingredients:
-        res += " &#x1F416"
-    if "ri" in ingredients:
-        res += " &#x1F404"
-    if "nF" in ingredients or \
-       matches("fisch", "pangasius", "lachs", "forelle", "meeres"):
-        res += " &#x1F41F"
-    return res
+        return f"{title} ({flag})"
+    if flag == "vegan-aufwunsch":
+        return f"{title} (auf Wunsch vegan)"
+    return title
 
 
 def get_swfr_url(mensa):
@@ -81,11 +64,30 @@ def get_swfr_url(mensa):
     return "https://www.swfr.de/essen/mensen-cafes-speiseplaene/" + suffix
 
 
-def get_ingredients(bs_element):
+def get_ingredients(bs_element, desc, flag):
+    res = []
+    def matches(*args):
+        return any(x in desc.lower() for x in args)
+    if flag.startswith("veg") or matches(" veg"):
+        res.append("&#x1F331")
+    if matches("hähn", "huhn", "hühn", "pute", "flügel"):
+        res.append("&#x1F414")
+    if matches("lamm"):
+        res.append("&#x1F411")
+    is_fish = matches("fisch", "pangasius", "lachs", "forelle", "meeres")
+    if is_fish:
+        res.append("&#x1F41F")
     match = bs_element.find("small", {"x-show": "!showAllergenes"})
     if not match:
-        return []
-    return match.contents[2].split(",")
+        return res
+    ing = match.contents[2].split(",")
+    if "sch" in ing:
+        res.append("&#x1F416")
+    if "ri" in ing:
+        res.append("&#x1F404")
+    if "nF" in ing and not is_fish:
+        res.append("&#x1F41F")
+    return res
 
 
 def get_date_with_year(day, month):

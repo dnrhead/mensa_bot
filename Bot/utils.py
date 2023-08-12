@@ -2,15 +2,10 @@ def format_date(date):
     return "%02d.%02d.%d" % (date.day, date.month, date.year)
 
 
-# TODO: This method is quite hacky, we should instead have separate fields in
-# the database.
 def format_menus(mensa, menus, date):
-    res = "<u><b>%s (%s):</b></u>" % (mensa, format_date(date))
-    for m in menus:
-        num = m.find("&#x1F")
-        symbols = "" if num == -1 else " " + m[num:]
-        tmp = m if num == -1 else m[:num-1]
-        res += "\n\n<b>" + tmp.replace(": ", symbols + ":</b>\n", 1)
+    res = f"<u><b>{mensa} ({format_date(date)}):</b></u>"
+    for t, d, i in menus:
+        res += f"\n\n<b>{t} {i}:</b>\n{d}"
     return res
 
 
