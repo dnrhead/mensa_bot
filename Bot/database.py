@@ -50,7 +50,7 @@ class Database:
     def get_menus(self, mensa, date):
         return self.__execute_sql("SELECT DISTINCT title, description, "
                                   "ingredients FROM menus WHERE "
-                                  "mensa=%r AND date=%r"
+                                  "mensa=%r AND date=%r AND title IS NOT NULL"
                                   % (mensa, format_date(date)))
 
     def add_menus(self, mensa, data):
