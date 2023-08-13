@@ -66,7 +66,6 @@ class Database:
             self.__execute_sql("INSERT INTO menus VALUES %s;" %
                                ", ".join(values))
 
-    
     def remove_menus(self, mensa, date):
         self.__execute_sql("DELETE FROM menus WHERE mensa=%r AND date=%r" %
                            (mensa, format_date(date)))

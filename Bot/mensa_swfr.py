@@ -21,7 +21,8 @@ def is_supported(mensa):
 
 def retrieve_menus(mensa):
     # TODO: Workaround
-    with urlopen(get_swfr_url(mensa), context=ssl._create_unverified_context()) as url:
+    with urlopen(get_swfr_url(mensa),
+                 context=ssl._create_unverified_context()) as url:
         bs = BeautifulSoup(url, "lxml")
     result = {}
     for d in bs.findAll("div", {"class": "menu-tagesplan"}):
@@ -49,7 +50,6 @@ def retrieve_menus(mensa):
     return result
 
 
-
 def format_title(title, flag):
     if flag in ["vegan", "vegetarisch"]:
         return f"{title} ({flag})"
@@ -66,6 +66,7 @@ def get_swfr_url(mensa):
 
 def get_ingredients(bs_element, desc, flag):
     res = []
+
     def matches(*args):
         return any(x in desc.lower() for x in args)
     if flag.startswith("veg") or matches(" veg"):

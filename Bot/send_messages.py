@@ -32,7 +32,8 @@ async def send_message_to_all(bot, users, msg):
 
 async def send_message(bot, chat_id, message):
     try:
-        await bot.send_message(chat_id=chat_id, text=message, parse_mode='HTML')
+        await bot.send_message(chat_id=chat_id, text=message,
+                               parse_mode='HTML')
     except Exception as ex:
         print("Could not send message to", chat_id, str(ex))
     sleep(0.05)  # avoiding flood limits
@@ -47,11 +48,11 @@ async def main():
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - '
                         '%(message)s')
     async with bot:
-      if len(sys.argv) > 2:
-          await send_message_to_all(bot, config.get_database().get_users(),
-                              " ".join(sys.argv[2:]))
-      else:
-          await send_menus(bot, config)
+        if len(sys.argv) > 2:
+            await send_message_to_all(bot, config.get_database().get_users(),
+                                      " ".join(sys.argv[2:]))
+        else:
+            await send_menus(bot, config)
 
 if __name__ == '__main__':
     asyncio.run(main())

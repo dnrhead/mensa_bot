@@ -20,7 +20,6 @@ def move_database(old_db, new_db):
     db = Database(new_db)
     for u, m in users:
         db.add_mensa_subscription(u, m)
-    menus_by_mensa = {}
     for mensa, date, menu in menus:
         d = date.split(".")
         try:
@@ -35,6 +34,7 @@ def move_database(old_db, new_db):
             db.add_menus(mensa, {dt: [(title, desc, ing)]})
         else:
             db.add_menus(mensa, {dt: []})
+
 
 if __name__ == "__main__":
     a = sys.argv

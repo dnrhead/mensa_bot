@@ -17,12 +17,14 @@ logger = logging.getLogger(__name__)
 
 
 async def start(update, context):
-    await update.message.reply_text('Hallo! Füge Mensen zu deiner Liste mit dem '
-                              '/add Befehl hinzu.\nJeden Tag um etwa 9 Uhr '
-                              'wird dir geschickt, was es zu essen gibt!'
+    await update.message.reply_text('Hallo! Füge Mensen zu deiner Liste mit '
+                                    'dem /add Befehl hinzu.\nJeden Tag um '
+                                    'etwa 9 Uhr wird dir geschickt, was es '
+                                    'zu essen gibt!'
 
-                              '\nFalls du Hilfe bei der Bedienung des Bots '
-                              'brauchst, schicke den /help Befehl.\n')
+                                    '\nFalls du Hilfe bei der Bedienung des '
+                                    'Bots brauchst, schicke den /help Befehl.'
+                                    '\n')
 
     print("start command sent", update.message.chat_id)
 
@@ -34,11 +36,11 @@ async def add(update, context):
         db = config.get_database()
         db.add_mensa_subscription(update.message.chat_id, mensa_to_add)
         await update.message.reply_text('%s wurde der Liste hinzugefügt.' %
-                                  mensa_to_add)
+                                        mensa_to_add)
         print("Mensa added.")
     else:
         await update.message.reply_text('Keine passende Mensa "%s" gefunden'
-                                  % mensa_txt)
+                                        % mensa_txt)
 
 
 async def remove(update, context):
@@ -48,10 +50,10 @@ async def remove(update, context):
         config.get_database().remove_mensa_subscription(update.message.chat_id,
                                                         mensa_to_remove)
         await update.message.reply_text('%s wurde aus der Liste entfernt.' %
-                                  mensa_to_remove)
+                                        mensa_to_remove)
     else:
         await update.message.reply_text('Keine passende Mensa "%s" gefunden'
-                                  % mensa_txt)
+                                        % mensa_txt)
 
 
 async def remove_all(update, context):
@@ -63,8 +65,8 @@ async def show_list(update, context):
     await update.message.reply_text('Du hast folgende Mensen abboniert:')
     db = config.get_database()
     mensas_sub = db.get_mensas_subscription(update.message.chat_id)
-    await update.message.reply_text(mensa.format_mensa_list(mensas_sub,
-                                                      config.get_mensas()))
+    formatted = mensa.format_mensa_list(mensas_sub, config.get_mensas())
+    await update.message.reply_text(formatted)
 
 
 async def essen(update, context, delta):
@@ -76,8 +78,8 @@ async def essen(update, context, delta):
     for m in subs:
         menus = mensa_menus[m]
         if not menus:
-            await update.message.reply_text(f"{format_date(date)} kein Essen in der {m}",
-                                      parse_mode='HTML')
+            msg = f"{format_date(date)} kein Essen in der {m}"
+            await update.message.reply_text(msg, parse_mode='HTML')
             continue
         text = format_menus(m, menus, date)
         await update.message.reply_text(text, parse_mode='HTML')
@@ -101,12 +103,12 @@ async def get_info(update, context):
     if update.message.chat_id in config.get_admin_ids():
         users_mensas = config.get_database().get_all_user_and_mensas()
         await update.message.reply_text("unique sending messages %d" %
-                                  len(users_mensas))
+                                        len(users_mensas))
 
         await update.message.reply_text("unique users %d" %
-                                  len(set([i[0] for i in users_mensas])))
+                                        len(set([i[0] for i in users_mensas])))
         await update.message.reply_text("unique mensas %d" %
-                                  len(set([i[1] for i in users_mensas])))
+                                        len(set([i[1] for i in users_mensas])))
 
 
 async def announce(update, context):
@@ -121,7 +123,8 @@ async def feedback(update, context):
         answer = answer_r + answer
         answer += "\n chat_id: " + str(update.message.chat_id)
         for i in config.get_admin_ids():
-            await context.bot.send_message(chat_id=i, text=answer, parse_mode='HTML')
+            await context.bot.send_message(chat_id=i, text=answer,
+                                           parse_mode='HTML')
         await update.message.reply_text("Danke, dein Feedback wurde gesendet")
 
 
@@ -155,14 +158,13 @@ def main():
     dp.add_handler(CommandHandler("get_info", get_info))
     dp.add_handler(CommandHandler("announce", announce))
     dp.add_handler(CommandHandler("overwrite", overwrite_menus))
-    
+
     # Start the Bot
     dp.run_polling()
     # Block until you press Ctrl-C or the process receives SIGINT, SIGTERM or
     # SIGABRT. This should be used most of the time, since start_polling() is
     # non-blocking and will stop the bot gracefully.
     print("should be started now")
-    #updater.idle()
     print("started bot")
 
 
