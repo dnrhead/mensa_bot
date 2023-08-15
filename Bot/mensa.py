@@ -26,7 +26,8 @@ def fetch_all_menus(config, date):
                 # An error occured during retrieving the menus, just use []
                 print(f"Retrieving menus for {m} raised the exception '{e}'.")
                 menus = []
-        result[m] = list(filter(bool, menus))
+        # Filter out menus where the title is none
+        result[m] = list(filter(lambda x: x[0], menus))
     return result
 
 
