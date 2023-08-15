@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import telegram
-from mensa import fetch_all_menus
+from mensa import fetch_all_menus, overwrite_current_menus
 from time import sleep
 import sys
 from datetime import datetime
@@ -14,6 +14,7 @@ import asyncio
 async def send_menus(bot, config):
     """Run the bot."""
     date = datetime.today()
+    overwrite_current_menus(config)
     mensa_menus = fetch_all_menus(config, date)
     users_mensas = config.get_database().get_all_user_and_mensas()
     print("Sending menus in %d messages" % (len(users_mensas)))
