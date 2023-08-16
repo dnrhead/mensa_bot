@@ -5,7 +5,7 @@ def format_date(date):
 def format_menus(mensa, menus, date):
     res = f"<u><b>{mensa} ({format_date(date)})</b></u>"
     for t, d, i in menus:
-        res += f"\n\n<b>{t} {i}:</b>\n{d}"
+        res += f"\n\n<b>{t} {i}</b>\n{d}"
     return res
 
 
