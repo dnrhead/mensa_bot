@@ -15,19 +15,18 @@ def is_supported(mensa):
 
 
 def retrieve_menus(mensa):
+    id = MENSA_IDS[mensa]
     with urlopen("https://www.my-stuwe.de/wp-json/mealplans/v1/canteens/" +
-                 MENSA_IDS[mensa]) as u:
+                 id) as u:
         d = json.load(u)
     res = {}
-    for i in d.values():
-        menus = {}
-        for m in i["menus"]:
-            date = format_date(m['menuDate'])
-            if date not in menus:
-                menus[date] = []
-            # TODO: Extract emojis
-            menus[date].append((m['menuLine'], ', '.join(m['menu']), ""))
-        return menus
+    for m in d[id]["menus"]:
+        date = format_date(m['menuDate'])
+        if date not in res:
+            res[date] = []
+        # TODO: Extract emojis
+        res[date].append((m['menuLine'], ', '.join(m['menu']), ""))
+    return res
 
 
 def format_date(date):
