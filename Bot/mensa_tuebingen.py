@@ -37,7 +37,7 @@ def retrieve_menus(mensa):
         title = m['menuLine']
         if "vegan" in desc:
             title += " (vegan)"
-        res[date].append((title, REGEX.sub("", desc), list(ing)))
+        res[date].append((title, REGEX.sub("", desc), " ".join(ing)))
     return res
 
 
