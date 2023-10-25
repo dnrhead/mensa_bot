@@ -1,7 +1,8 @@
 from utils import edit_distance
 # Additional mensas need to be imported and added here
 import mensa_swfr
-MENSA_MODULES = [mensa_swfr]
+import mensa_tuebingen
+MENSA_MODULES = [mensa_swfr, mensa_tuebingen]
 
 
 def retrieve_menus(mensa):
