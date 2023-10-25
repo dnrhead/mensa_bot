@@ -7,7 +7,8 @@ MENSA_MODULES = [mensa_swfr, mensa_tuebingen]
 
 def retrieve_menus(mensa):
     module_candidates = [m for m in MENSA_MODULES if m.is_supported(mensa)]
-    assert len(module_candidates) == 1
+    if not module_candidates:
+        raise KeyError(f"Unable to retrieve menus for {mensa}")
     return module_candidates[0].retrieve_menus(mensa)
 
 
