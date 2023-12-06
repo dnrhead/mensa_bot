@@ -72,7 +72,7 @@ async def show_list(update, context):
 async def week(update, context):
     today = datetime.today()
     db = config.get_database()
-    menus = []
+    formatted_menus = []
     for i in range(7):
         date = today + timedelta(i - today.weekday())
         # TODO: It is not necessary to fetch all menus here, only `subs` are
@@ -83,8 +83,9 @@ async def week(update, context):
             menus = mensa_menus[m]
             if not menus:
                 continue
-            menus.append(format_menus(m, menus, date))
-    await update.message.reply_text("\n\n".join(menus), parse_mode='HTML')
+            formatted_menus.append(format_menus(m, menus, date))
+    await update.message.reply_text("\n\n".join(formatted_menus),
+                                    parse_mode='HTML')
 
 
 async def essen(update, context, delta):
