@@ -165,7 +165,7 @@ def main():
     dp.add_handler(CommandHandler("feedback", feedback))
 
     dp.add_handler(CommandHandler("essen", lambda u, c: essen(u, c, 0)))
-    dp.add_handler(CommandHandler("week", week)
+    dp.add_handler(CommandHandler("week", week))
     dp.add_handler(CommandHandler("heute", lambda u, c: essen(u, c, 0)))
     dp.add_handler(CommandHandler("morgen", lambda u, c: essen(u, c, 1)))
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
