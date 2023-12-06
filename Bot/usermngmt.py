@@ -69,6 +69,24 @@ async def show_list(update, context):
     await update.message.reply_text(formatted)
 
 
+async def week(update, context):
+    today = datetime.today()
+    db = config.get_database()
+    menus = []
+    for i in range(7):
+        date = today + timedelta(i - today.weekday())
+        # TODO: It is not necessary to fetch all menus here, only `subs` are
+        # needed
+        mensa_menus = mensa.fetch_all_menus(config, date)
+        subs = db.get_mensas_subscription(update.message.chat_id)
+        for m in subs:
+            menus = mensa_menus[m]
+            if not menus:
+                continue
+            menus.append(format_menus(m, menus, date))
+    await update.message.reply_text("\n\n".join(menus), parse_mode='HTML')
+
+
 async def essen(update, context, delta):
     date = datetime.today() + timedelta(delta)
     # TODO: It is not necessary to fetch all menus here, only `subs` are needed
@@ -147,6 +165,7 @@ def main():
     dp.add_handler(CommandHandler("feedback", feedback))
 
     dp.add_handler(CommandHandler("essen", lambda u, c: essen(u, c, 0)))
+    dp.add_handler(CommandHandler("week", week)
     dp.add_handler(CommandHandler("heute", lambda u, c: essen(u, c, 0)))
     dp.add_handler(CommandHandler("morgen", lambda u, c: essen(u, c, 1)))
     weekdays = ["montag", "dienstag", "mittwoch", "donnerstag", "freitag",
