@@ -4,24 +4,31 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import ssl
 
-MENSAS_FREIBURG = ['Mensa Rempartstrasse', 'Mensa Institutsviertel',
-                   'Mensa Littenweiler', 'Mensa Flugplatz',
-                   'Ausgabestelle EH Freiburg', 'MusiKantine']
-SUPPORTED_MENSAS = MENSAS_FREIBURG + ['Mensa Furtwangen', 'OHG Furtwangen',
-                                      'Mensa Offenburg', 'Mensa Gengenbach',
-                                      'Mensa Kehl', 'Mensa Schwenningen',
-                                      'Mensa Trossingen', 'Mensa Loerrach']
+MENSA_URLS = {'Mensa Rempartstrasse': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/freiburg/mensa-rempartstrasse',
+              'Mensa Institutsviertel': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/freiburg/mensa-institutsviertel',
+              'Mensa Littenweiler': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/freiburg/mensa-littenweiler',
+              'Mensa Flugplatz': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/freiburg/mensa-flugplatz-cafe-flugplatz',
+              'Ausgabestelle EH Freiburg': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/freiburg/ausgabestelle-eh-freiburg',
+              'MusiKantine': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/freiburg/musikantine',
+              'Mensa Furtwangen': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/mensa-furtwangen',
+              'Mensa Offenburg': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/mensa-offenburg',
+              'Mensa Gengenbach': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/mensa-gengenbach',
+              'Mensa Kehl': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/mensa-kehl',
+              'Mensa Schwenningen': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/mensa-schwenningen',
+              'Mensa Trossingen': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/mensa-trossingen',
+              'Mensa Lörrach': 'https://www.swfr.de/essen/mensen-cafes-speiseplaene/mensa-loerrach'}
+
 MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli",
           "August", "September", "Oktober", "November", "Dezember"]
 
 
 def is_supported(mensa):
-    return mensa in SUPPORTED_MENSAS
+    return mensa in MENSA_URLS
 
 
 def retrieve_menus(mensa):
     # TODO: Workaround
-    with urlopen(get_swfr_url(mensa),
+    with urlopen(MENSA_URLS[mensa],
                  context=ssl._create_unverified_context()) as url:
         bs = BeautifulSoup(url, "lxml")
     result = {}
@@ -56,12 +63,6 @@ def format_title(title, flag):
     if flag == "vegan-aufwunsch":
         return f"{title} (auf Wunsch vegan)"
     return title
-
-
-def get_swfr_url(mensa):
-    mensa_url = mensa.lower().replace(" ", "-")
-    suffix = f"freiburg/{mensa_url}" if mensa in MENSAS_FREIBURG else mensa_url
-    return "https://www.swfr.de/essen/mensen-cafes-speiseplaene/" + suffix
 
 
 def get_ingredients(bs_element, desc, flag):
