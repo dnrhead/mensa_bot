@@ -61,7 +61,7 @@ def retrieve_menus(mensa):
 def format_title(title, flag):
     if flag in ["vegan", "vegetarisch", "pflanzlich"]:
         return f"{title} ({flag})"
-    if flag == "vegan-aufwunsch":
+    if flag in ["vegan-aufwunsch", "auf Wunsch pflanzlich"]:
         return f"{title} (auf Wunsch vegan)"
     return title
 
