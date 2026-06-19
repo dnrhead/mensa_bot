@@ -47,6 +47,7 @@ def retrieve_menus(mensa):
             flag = flag_match.getText().strip()
             desc_match = c.find("small", {"class": "extra-text mb-15px"})
             desc = desc_match.getText(", ").replace(":,", ":")
+            desc = re.sub(r',\s*-{3,},', ',', desc)
             menus.append((format_title(title.strip(), flag), desc,
                           " ".join(get_ingredients(c, desc, flag))))
         day, month = date_match.groups()
@@ -58,7 +59,7 @@ def retrieve_menus(mensa):
 
 
 def format_title(title, flag):
-    if flag in ["vegan", "vegetarisch"]:
+    if flag in ["vegan", "vegetarisch", "pflanzlich"]:
         return f"{title} ({flag})"
     if flag == "vegan-aufwunsch":
         return f"{title} (auf Wunsch vegan)"
@@ -70,13 +71,13 @@ def get_ingredients(bs_element, desc, flag):
 
     def matches(*args):
         return any(x in desc.lower() for x in args)
-    if flag.startswith("veg") or matches(" veg"):
+    if flag.startswith("veg") or matches(" veg") or flag.startswith("pfl"):
         res.append("&#x1F331")
-    if matches("hähn", "huhn", "hühn", "pute", "flügel"):
+    if matches("hähn", "huhn", "hühn", "pute", "flügel", "chicken"):
         res.append("&#x1F414")
     if matches("lamm"):
         res.append("&#x1F411")
-    is_fish = matches("fisch", "pangasius", "lachs", "forelle", "meeres")
+    is_fish = matches("fisch", "pangasius", "lachs", "forelle", "meeres", "schlemmerfilet", "timmy")
     if is_fish:
         res.append("&#x1F41F")
     match = bs_element.find("small", {"x-show": "!showAllergenes"})
